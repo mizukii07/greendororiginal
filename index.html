@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GREEN DOOR RPG - Ficha Completa</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --verde-neon: #4efc97;
@@ -15,6 +16,7 @@
       --branco: #e0f0e5;
       --sombra: rgba(0, 255, 100, 0.3);
       --destaque: #ffeb3b;
+      --gradiente: linear-gradient(135deg, #0a2e1a 0%, #1e4530 50%, #0a2e1a 100%);
     }
 
     * {
@@ -25,10 +27,11 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(rgba(10, 30, 20, 0.9), rgba(10, 30, 20, 0.9));
+      background: var(--gradiente);
       color: var(--branco);
       display: flex;
       min-height: 100vh;
+      background-attachment: fixed;
     }
 
     /* Menu Lateral */
@@ -40,11 +43,15 @@
       position: fixed;
       height: 100vh;
       z-index: 100;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
     .logo {
       text-align: center;
       margin-bottom: 30px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(10,40,20,0.5);
     }
 
     .logo img {
@@ -59,16 +66,24 @@
       cursor: pointer;
       transition: all 0.3s;
       font-family: 'Orbitron', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .menu-item:hover {
       background-color: var(--verde-meio);
+      transform: translateX(5px);
     }
 
     .menu-item.ativo {
       background-color: var(--verde-claro);
       color: var(--preto);
       font-weight: bold;
+    }
+
+    .menu-item i {
+      font-size: 1.2rem;
     }
 
     /* Conteúdo Principal */
@@ -80,26 +95,46 @@
 
     /* Ficha Container */
     .ficha-container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       background: rgba(10, 40, 20, 0.8);
-      border-radius: 10px;
-      padding: 25px;
-      box-shadow: 0 0 30px var(--sombra);
-      border: 1px solid var(--verde-neon);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 0 40px var(--sombra);
+      border: 2px solid var(--verde-neon);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ficha-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: var(--verde-neon);
+      box-shadow: 0 0 15px var(--verde-neon);
     }
 
     h1, h2, h3 {
       font-family: 'Orbitron', sans-serif;
       color: var(--verde-neon);
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(78, 252, 151, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
     }
 
     /* Informações do Jogador */
     .info-jogador {
       display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
+      gap: 25px;
+      margin-bottom: 30px;
       flex-wrap: wrap;
     }
 
@@ -109,15 +144,22 @@
     }
 
     .avatar {
-      width: 150px;
-      height: 150px;
-      border-radius: 8px;
+      width: 180px;
+      height: 180px;
+      border-radius: 10px;
       background: rgba(30, 70, 40, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      border: 2px dashed var(--verde-neon);
+      border: 2px solid var(--verde-neon);
+      box-shadow: 0 0 15px rgba(78, 252, 151, 0.3);
+      transition: all 0.3s;
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(78, 252, 151, 0.5);
     }
 
     .avatar img {
@@ -127,125 +169,173 @@
 
     label {
       display: block;
-      margin: 10px 0 5px;
+      margin: 15px 0 8px;
       font-weight: bold;
       color: var(--verde-neon);
+      font-size: 1.1rem;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       background: rgba(30, 70, 40, 0.5);
       border: 1px solid var(--verde-neon);
-      border-radius: 4px;
+      border-radius: 6px;
       color: var(--branco);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--destaque);
+      box-shadow: 0 0 10px var(--destaque);
     }
 
     /* Estatísticas */
     .estatisticas-container {
       display: flex;
-      gap: 15px;
-      margin: 15px 0;
+      gap: 20px;
+      margin: 20px 0;
       flex-wrap: wrap;
     }
 
     .estatistica-item {
       flex: 1;
-      min-width: 120px;
+      min-width: 140px;
       text-align: center;
-      padding: 10px;
+      padding: 15px;
       background: rgba(20, 50, 30, 0.6);
-      border-radius: 8px;
-      border-left: 3px solid var(--verde-neon);
+      border-radius: 10px;
+      border-left: 4px solid var(--verde-neon);
+      transition: all 0.3s;
+    }
+
+    .estatistica-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     .estatistica-valor {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
-      margin-top: 5px;
+      margin-top: 10px;
       color: var(--verde-neon);
     }
 
     /* Fôlego */
     .folego-container {
-      margin-top: 15px;
+      margin-top: 20px;
+      background: rgba(20, 50, 30, 0.6);
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 4px solid var(--verde-neon);
     }
 
     .barra-folego {
-      height: 10px;
+      height: 15px;
       background: var(--verde-escuro);
-      border-radius: 5px;
-      margin-top: 5px;
+      border-radius: 8px;
+      margin-top: 10px;
       overflow: hidden;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
     }
 
     .barra-folego-inner {
       height: 100%;
       background: var(--verde-neon);
       width: 100%;
-      transition: width 0.3s ease;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px rgba(78, 252, 151, 0.5);
     }
 
     /* Status da barra de fôlego */
     .folego-status {
       display: flex;
       justify-content: space-between;
-      margin-top: 5px;
-      font-size: 0.8rem;
+      margin-top: 10px;
+      font-size: 0.9rem;
     }
 
     /* Atributos e Perícias */
     .grid-atributos {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
     }
 
     .card-atributo {
       background: rgba(20, 50, 30, 0.6);
-      border-radius: 8px;
-      padding: 15px;
-      border-left: 4px solid var(--verde-neon);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 5px solid var(--verde-neon);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+
+    .card-atributo:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .card-atributo h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
     }
 
     .atributo-input {
-      width: 60px;
-      margin-bottom: 10px;
+      width: 70px;
+      margin-bottom: 15px;
       font-weight: bold;
+      font-size: 1.3rem;
+      text-align: center;
+      padding: 8px;
     }
 
     .pericia-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin: 8px 0;
-      padding: 5px;
+      gap: 10px;
+      margin: 12px 0;
+      padding: 8px;
       background: rgba(30, 60, 40, 0.3);
-      border-radius: 4px;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+
+    .pericia-item:hover {
+      background: rgba(40, 80, 50, 0.4);
+      transform: translateX(5px);
     }
 
     .pericia-nome {
       flex: 1;
+      font-size: 1.1rem;
     }
 
     .pericia-manual {
-      width: 40px;
+      width: 50px;
       text-align: center;
+      padding: 5px;
+      font-size: 1.1rem;
     }
 
     .pericia-total {
-      min-width: 30px;
+      min-width: 40px;
       text-align: center;
       font-weight: bold;
+      font-size: 1.2rem;
       color: var(--verde-neon);
     }
 
     /* Botões */
     .btn-container {
       display: flex;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 15px;
+      margin-top: 30px;
       flex-wrap: wrap;
     }
 
@@ -253,16 +343,25 @@
       background: var(--verde-neon);
       color: var(--verde-escuro);
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 12px 20px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 1.1rem;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .btn:hover {
       background: var(--branco);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(78, 252, 151, 0.5);
+    }
+
+    .btn i {
+      font-size: 1.2rem;
     }
 
     .btn-login {
@@ -273,10 +372,10 @@
     /* Seções EM BREVE */
     .em-breve {
       text-align: center;
-      padding: 50px 20px;
-      font-size: 2rem;
+      padding: 100px 20px;
+      font-size: 2.5rem;
       color: var(--verde-neon);
-      text-shadow: 0 0 10px var(--sombra);
+      text-shadow: 0 0 15px var(--sombra);
     }
 
     /* Modal */
@@ -287,7 +386,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -296,21 +395,95 @@
     .modal-conteudo {
       background: var(--verde-escuro);
       border: 2px solid var(--verde-neon);
-      border-radius: 10px;
-      padding: 20px;
+      border-radius: 15px;
+      padding: 30px;
       width: 90%;
-      max-width: 500px;
-      text-align: center;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 40px var(--sombra);
     }
 
     .modal-botoes {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .modal-ficha {
+      background: rgba(20, 40, 20, 0.9);
+      padding: 20px;
+      border-radius: 10px;
       margin-top: 20px;
     }
 
+    /* Lista de fichas */
+    .ficha-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 15px;
+      background: rgba(30, 60, 40, 0.5);
+      border-radius: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .ficha-item:hover {
+      background: rgba(40, 80, 50, 0.7);
+      transform: translateX(10px);
+    }
+
+    .ficha-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--verde-neon);
+    }
+
+    .ficha-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ficha-info {
+      flex: 1;
+    }
+
+    .ficha-info h3 {
+      margin-bottom: 5px;
+      color: var(--verde-neon);
+    }
+
+    .ficha-info p {
+      color: #aaa;
+    }
+
+    /* Efeitos de fôlego baixo */
+    .low-stamina .pericia-total {
+      color: #ff9900 !important;
+    }
+
+    .no-stamina .pericia-total {
+      color: #ff0000 !important;
+      text-decoration: line-through;
+    }
+
     /* Responsividade */
+    @media (max-width: 992px) {
+      .menu-lateral {
+        width: 200px;
+      }
+      
+      .conteudo {
+        margin-left: 200px;
+      }
+    }
+
     @media (max-width: 768px) {
       .menu-lateral {
         width: 100%;
@@ -321,6 +494,24 @@
       .conteudo {
         margin-left: 0;
       }
+      
+      .info-jogador {
+        flex-direction: column;
+      }
+      
+      .avatar {
+        margin: 0 auto;
+      }
+    }
+
+    /* Animação de entrada */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .ficha-container, .ficha-item {
+      animation: fadeIn 0.5s ease-out;
     }
   </style>
 </head>
@@ -331,11 +522,21 @@
       <img src="https://media.discordapp.net/attachments/1402279926987493437/1402435120287187066/31_Sem_Titulo2_20250719171917.png" alt="Green Door Logo">
     </div>
     
-    <div class="menu-item ativo" onclick="mostrarSecao('ficha')">Minha Ficha</div>
-    <div class="menu-item" onclick="mostrarSecao('ranking')">Rankings</div>
-    <div class="menu-item" onclick="mostrarSecao('leilao')">Leilão</div>
-    <div class="menu-item" onclick="mostrarSecao('mestre')">Painel do Mestre</div>
-    <div class="menu-item" id="menu-login" onclick="login()">Entrar</div>
+    <div class="menu-item ativo" onclick="mostrarSecao('ficha')">
+      <i class="fas fa-scroll"></i> Minha Ficha
+    </div>
+    <div class="menu-item" onclick="mostrarSecao('ranking')">
+      <i class="fas fa-trophy"></i> Rankings
+    </div>
+    <div class="menu-item" onclick="mostrarSecao('leilao')">
+      <i class="fas fa-gavel"></i> Leilão
+    </div>
+    <div class="menu-item" onclick="mostrarSecao('mestre')">
+      <i class="fas fa-crown"></i> Painel do Mestre
+    </div>
+    <div class="menu-item" id="menu-login" onclick="login()">
+      <i class="fas fa-sign-in-alt"></i> Entrar
+    </div>
   </div>
 
   <!-- Modal de Login -->
@@ -344,8 +545,12 @@
       <h3>ENTRAR NO GREEN DOOR</h3>
       <p>Faça login para salvar sua ficha e acessar todos os recursos</p>
       <div class="modal-botoes">
-        <button class="btn btn-login" onclick="fazerLoginGoogle()">Entrar com Google</button>
-        <button class="btn" onclick="fecharLogin()">Cancelar</button>
+        <button class="btn btn-login" onclick="fazerLoginGoogle()">
+          <i class="fab fa-google"></i> Entrar com Google
+        </button>
+        <button class="btn" onclick="fecharLogin()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
       </div>
     </div>
   </div>
@@ -355,18 +560,18 @@
     <!-- Seção da Ficha -->
     <div id="secao-ficha">
       <div class="ficha-container">
-        <h1>FICHA DO JOGADOR</h1>
+        <h1><i class="fas fa-scroll"></i> FICHA DO JOGADOR</h1>
         
         <!-- Informações Básicas -->
         <div class="info-jogador">
           <div class="dados-jogador">
-            <label for="nome">Nome do Personagem</label>
+            <label for="nome"><i class="fas fa-user"></i> Nome do Personagem</label>
             <input type="text" id="nome" placeholder="Ex: Rin Itoshi">
             
-            <label for="idade">Idade</label>
+            <label for="idade"><i class="fas fa-birthday-cake"></i> Idade</label>
             <input type="number" id="idade" min="13" max="50" value="18">
             
-            <label for="classe">Classe</label>
+            <label for="classe"><i class="fas fa-magic"></i> Classe</label>
             <select id="classe">
               <option value="">Selecione sua classe...</option>
               <option value="padeiro">O Padeiro</option>
@@ -424,7 +629,7 @@
           </div>
           
           <div class="dados-jogador">
-            <label for="posicao">Posição</label>
+            <label for="posicao"><i class="fas fa-map-marker-alt"></i> Posição</label>
             <select id="posicao">
               <option value="goleiro">Goleiro</option>
               <option value="zagueiro">Zagueiro</option>
@@ -433,22 +638,22 @@
               <option value="atacante">Atacante</option>
             </select>
             
-            <label for="altura">Altura (m)</label>
+            <label for="altura"><i class="fas fa-arrows-alt-v"></i> Altura (m)</label>
             <input type="number" id="altura" min="1.50" max="2.05" step="0.01" value="1.75">
             
-            <label for="peso">Peso (kg)</label>
+            <label for="peso"><i class="fas fa-weight"></i> Peso (kg)</label>
             <input type="number" id="peso" min="50" max="100" step="1" value="70">
           </div>
           
           <div class="dados-jogador">
-            <label for="perna">Perna Dominante</label>
+            <label for="perna"><i class="fas fa-walking"></i> Perna Dominante</label>
             <select id="perna">
               <option value="direita">Direita</option>
               <option value="esquerda">Esquerda</option>
               <option value="ambidestro">Ambidestro</option>
             </select>
             
-            <label for="dom">Dom Natural</label>
+            <label for="dom"><i class="fas fa-star"></i> Dom Natural</label>
             <select id="dom">
               <option value="nenhum">Nenhum</option>
               <option value="genio">Gênio (+6 pontos em perícias)</option>
@@ -456,11 +661,11 @@
             </select>
             
             <div class="folego-container">
-              <label>Fôlego (Atual/Total)</label>
+              <label><i class="fas fa-wind"></i> Fôlego (Atual/Total)</label>
               <div style="display: flex; align-items: center; gap: 5px;">
-                <input type="number" id="folego-atual" min="0" value="10" style="width: 60px;">
+                <input type="number" id="folego-atual" min="0" value="10" style="width: 70px;">
                 <span>/</span>
-                <input type="number" id="folego-total" min="1" value="10" style="width: 60px;">
+                <input type="number" id="folego-total" min="1" value="10" style="width: 70px;">
               </div>
               <div class="barra-folego">
                 <div class="barra-folego-inner" id="barra-folego" style="width: 100%;"></div>
@@ -482,37 +687,40 @@
         <!-- Estatísticas -->
         <div class="estatisticas-container">
           <div class="estatistica-item">
-            <span>⚽ Gols</span>
+            <span><i class="fas fa-futbol"></i> Gols</span>
             <input type="number" id="gols" min="0" value="0" class="estatistica-valor">
           </div>
           
           <div class="estatistica-item">
-            <span>👟 Assistências</span>
+            <span><i class="fas fa-shoe-prints"></i> Assistências</span>
             <input type="number" id="assistencias" min="0" value="0" class="estatistica-valor">
           </div>
           
           <div class="estatistica-item" id="sg-container" style="display:none;">
-            <span>🛡️ SG</span>
+            <span><i class="fas fa-shield-alt"></i> SG</span>
             <input type="number" id="sg" min="0" value="0" class="estatistica-valor">
           </div>
           
           <div class="estatistica-item">
-            <span>🏃‍♂️ Deslocamento</span>
+            <span><i class="fas fa-running"></i> Deslocamento</span>
             <input type="number" id="deslocamento" min="0" value="10" class="estatistica-valor" readonly>
           </div>
         </div>
         
         <!-- Upload de Avatar -->
         <div style="text-align: center; margin-bottom: 20px;">
-          <input type="file" id="avatar-input" accept="image/*">
+          <label for="avatar-input" class="btn">
+            <i class="fas fa-upload"></i> Carregar Avatar
+          </label>
+          <input type="file" id="avatar-input" accept="image/*" style="display: none;">
         </div>
 
         <!-- Atributos e Perícias -->
-        <h2>ATRIBUTOS E PERÍCIAS</h2>
+        <h2><i class="fas fa-chart-bar"></i> ATRIBUTOS E PERÍCIAS</h2>
         <div class="grid-atributos">
           <!-- POTÊNCIA -->
           <div class="card-atributo">
-            <h3>💪 POTÊNCIA</h3>
+            <h3><i class="fas fa-fist-raised"></i> POTÊNCIA</h3>
             <input type="number" id="potencia" class="atributo-input" min="-50" max="50" value="0">
             
             <div class="pericia-item">
@@ -536,7 +744,7 @@
           
           <!-- TÉCNICA -->
           <div class="card-atributo">
-            <h3>⚽ TÉCNICA</h3>
+            <h3><i class="fas fa-futbol"></i> TÉCNICA</h3>
             <input type="number" id="tecnica" class="atributo-input" min="-50" max="50" value="0">
             
             <div class="pericia-item">
@@ -572,7 +780,7 @@
           
           <!-- VELOCIDADE -->
           <div class="card-atributo">
-            <h3>🏃 VELOCIDADE</h3>
+            <h3><i class="fas fa-running"></i> VELOCIDADE</h3>
             <input type="number" id="velocidade" class="atributo-input" min="-50" max="50" value="0">
             
             <div class="pericia-item">
@@ -590,7 +798,7 @@
           
           <!-- AGILIDADE -->
           <div class="card-atributo">
-            <h3>🥋 AGILIDADE</h3>
+            <h3><i class="fas fa-user-ninja"></i> AGILIDADE</h3>
             <input type="number" id="agilidade" class="atributo-input" min="-50" max="50" value="0">
             
             <div class="pericia-item">
@@ -620,7 +828,7 @@
           
           <!-- EGO -->
           <div class="card-atributo">
-            <h3>💎 EGO</h3>
+            <h3><i class="fas fa-gem"></i> EGO</h3>
             <input type="number" id="ego" class="atributo-input" min="-50" max="50" value="0">
             
             <div class="pericia-item">
@@ -657,13 +865,14 @@
         
         <!-- Habilidades e Botões -->
         <div style="margin-top: 30px;">
-          <h3>HABILIDADES ESPECIAIS</h3>
-          <textarea id="habilidades" style="width: 100%; min-height: 100px;" placeholder="Descreva as habilidades especiais do seu personagem..."></textarea>
+          <h3><i class="fas fa-fire"></i> HABILIDADES ESPECIAIS</h3>
+          <textarea id="habilidades" style="width: 100%; min-height: 120px; font-size: 1.1rem;" placeholder="Descreva as habilidades especiais do seu personagem..."></textarea>
         </div>
         
         <div class="btn-container">
-          <button class="btn" onclick="calcularPericias()">CALCULAR PERÍCIAS</button>
-          <button class="btn" onclick="salvarFicha()">SALVAR FICHA</button>
+          <button class="btn" onclick="salvarFicha()">
+            <i class="fas fa-save"></i> SALVAR FICHA
+          </button>
         </div>
       </div>
     </div>
@@ -691,7 +900,10 @@
     <!-- Seção Painel do Mestre -->
     <div id="secao-mestre" style="display: none;">
       <div class="ficha-container">
-        <h1>PAINEL DO MESTRE</h1>
+        <h1><i class="fas fa-crown"></i> PAINEL DO MESTRE</h1>
+        <div id="admin-message" style="color: #ff6b6b; margin-bottom: 20px; display: none;">
+          <i class="fas fa-exclamation-circle"></i> Acesso restrito a administradores
+        </div>
         <div id="lista-fichas" style="margin-top: 20px;">
           <!-- As fichas serão carregadas aqui -->
         </div>
@@ -702,11 +914,28 @@
   <!-- Modal para escolha de ambidestro -->
   <div id="modal-ambidestro" class="modal">
     <div class="modal-conteudo">
-      <h3>ESCOLHA DE AMBIDESTRO</h3>
+      <h3><i class="fas fa-ambulance"></i> ESCOLHA DE AMBIDESTRO</h3>
       <p>Você selecionou Ambidestro. Escolha onde aplicar seu bônus adicional:</p>
       <div class="modal-botoes">
-        <button class="btn" onclick="escolherAmbidestro('pontaria')">+5 Pontaria</button>
-        <button class="btn" onclick="escolherAmbidestro('chute')">+5 Chute</button>
+        <button class="btn" onclick="escolherAmbidestro('pontaria')">
+          <i class="fas fa-bullseye"></i> +5 Pontaria
+        </button>
+        <button class="btn" onclick="escolherAmbidestro('chute')">
+          <i class="fas fa-futbol"></i> +5 Chute
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para visualizar ficha -->
+  <div id="modal-ficha" class="modal">
+    <div class="modal-conteudo">
+      <h3 id="modal-ficha-titulo">FICHA DO JOGADOR</h3>
+      <button class="btn" onclick="fecharModalFicha()" style="position: absolute; top: 15px; right: 15px;">
+        <i class="fas fa-times"></i>
+      </button>
+      <div id="modal-ficha-conteudo" class="modal-ficha">
+        <!-- Conteúdo da ficha será carregado aqui -->
       </div>
     </div>
   </div>
@@ -731,7 +960,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Tabelas de bônus de altura/peso (COMPLETAS)
+    // Tabelas de bônus de altura/peso
     const bonusAltura = {
       '1.50-1.55': { drible: 3, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -2 },
       '1.56-1.60': { drible: 2, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -1 },
@@ -760,8 +989,9 @@
     };
 
     // Variáveis globais
-    let escolhaAmbidestro = ''; // Armazena a escolha do jogador (pontaria ou chute)
-    let fichaId = ''; // Armazena o ID da ficha no Firestore
+    let escolhaAmbidestro = '';
+    let fichaId = '';
+    let isAdmin = false;
 
     // Função para identificar intervalo
     function getBonus(value, table) {
@@ -787,7 +1017,6 @@
       const porcentagem = Math.min(100, (atual / total) * 100);
       const barra = document.getElementById('barra-folego');
       
-      // Atualizar largura da barra
       barra.style.width = `${porcentagem}%`;
       
       // Atualizar status visual
@@ -819,6 +1048,7 @@
       const peso = parseInt(document.getElementById('peso').value) || 70;
       const perna = document.getElementById('perna').value;
       const posicao = document.getElementById('posicao').value;
+      const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 10;
 
       const bonusA = getBonus(altura, bonusAltura);
       const bonusP = getBonus(peso, bonusPeso);
@@ -837,7 +1067,25 @@
       const bonusAjustadoA = ajustarDefesa({...bonusA});
       const bonusAjustadoP = ajustarDefesa({...bonusP});
 
+      // Verificar se aplica penalidade de fôlego
+      let staminaPenalty = 1;
+      let staminaClass = '';
+      
+      if (folegoAtual <= 10 && folegoAtual > 0) {
+        staminaPenalty = 0.5; // 50% de penalidade
+        staminaClass = 'low-stamina';
+      } else if (folegoAtual === 0) {
+        staminaPenalty = 0; // 100% de penalidade
+        staminaClass = 'no-stamina';
+      }
+
       document.querySelectorAll('.pericia-item').forEach(item => {
+        // Resetar classes de stamina
+        item.classList.remove('low-stamina', 'no-stamina');
+        if (staminaClass) {
+          item.classList.add(staminaClass);
+        }
+        
         const periciaId = item.querySelector('.pericia-manual').dataset.pericia;
         const card = item.closest('.card-atributo');
         const atributoId = card.querySelector('.atributo-input').id;
@@ -852,17 +1100,18 @@
 
         // Aplicar ambidestria
         if (perna === 'ambidestro') {
-          // Bônus padrão para todas as perícias
           if (['passe','drible','dominio','roubo'].includes(periciaId)) {
             valor += 5;
           }
           
-          // Bônus adicional na escolha
           if ((periciaId === 'pontaria' && escolhaAmbidestro === 'pontaria') || 
               (periciaId === 'chute' && escolhaAmbidestro === 'chute')) {
             valor += 5;
           }
         }
+
+        // Aplicar penalidade de fôlego
+        valor = Math.floor(valor * staminaPenalty);
 
         // Atualizar total
         const pontosManuais = parseInt(item.querySelector('.pericia-manual').value) || 0;
@@ -871,7 +1120,7 @@
 
       // Atualizar deslocamento (10 + velocidade)
       const velocidade = parseInt(document.getElementById('velocidade').value) || 0;
-      document.getElementById('deslocamento').value = 10 + velocidade;
+      document.getElementById('deslocamento').value = 10 + Math.floor(velocidade * staminaPenalty);
     }
 
     // Mostrar/ocultar campo SG conforme a posição
@@ -935,7 +1184,36 @@
       
       // Carregar fichas se for o painel do mestre
       if (secao === 'mestre') {
-        carregarFichasParaMestre();
+        verificarAdmin();
+      }
+    }
+
+    // Verificar se usuário é admin
+    async function verificarAdmin() {
+      const user = auth.currentUser;
+      const adminMessage = document.getElementById('admin-message');
+      
+      if (!user) {
+        adminMessage.style.display = 'block';
+        adminMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Faça login para acessar o Painel do Mestre';
+        return;
+      }
+      
+      try {
+        const adminDoc = await db.collection('admins').doc(user.uid).get();
+        isAdmin = adminDoc.exists;
+        
+        if (isAdmin) {
+          adminMessage.style.display = 'none';
+          carregarFichasParaMestre();
+        } else {
+          adminMessage.style.display = 'block';
+          adminMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Acesso restrito a administradores';
+        }
+      } catch (error) {
+        console.error('Erro ao verificar admin:', error);
+        adminMessage.style.display = 'block';
+        adminMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Erro ao verificar permissões';
       }
     }
 
@@ -966,6 +1244,7 @@
         sg: document.getElementById('sg').value,
         deslocamento: document.getElementById('deslocamento').value,
         avatar: document.getElementById('avatar-img').src || '',
+        habilidades: document.getElementById('habilidades').value,
         pericias: {}
       };
 
@@ -990,10 +1269,8 @@
       // Salvar no Firestore
       try {
         if (fichaId) {
-          // Atualizar ficha existente
           await db.collection('fichas').doc(fichaId).update(ficha);
         } else {
-          // Criar nova ficha
           const docRef = await db.collection('fichas').add({
             ...ficha,
             userId: user.uid,
@@ -1040,6 +1317,7 @@
           document.getElementById('assistencias').value = ficha.assistencias || 0;
           document.getElementById('sg').value = ficha.sg || 0;
           document.getElementById('deslocamento').value = ficha.deslocamento || 10;
+          document.getElementById('habilidades').value = ficha.habilidades || '';
           
           // Avatar
           if (ficha.avatar) {
@@ -1066,6 +1344,7 @@
           // Atualizar campos dependentes
           atualizarCamposPosicao();
           atualizarBarraFolego();
+          calcularPericias();
         }
       } catch (error) {
         console.error('Erro ao carregar ficha:', error);
@@ -1087,12 +1366,20 @@
         snapshot.forEach(doc => {
           const ficha = doc.data();
           const fichaEl = document.createElement('div');
-          fichaEl.className = 'card-atributo';
+          fichaEl.className = 'ficha-item';
+          fichaEl.setAttribute('data-id', doc.id);
+          fichaEl.onclick = () => mostrarFichaCompleta(doc.id, ficha);
+          
           fichaEl.innerHTML = `
-            <h3>${ficha.nome || 'Sem nome'}</h3>
-            <p><strong>Classe:</strong> ${ficha.classe || '-'}</p>
-            <p><strong>Posição:</strong> ${ficha.posicao || '-'}</p>
-            <p><strong>Gols:</strong> ${ficha.gols || 0} | <strong>Assistências:</strong> ${ficha.assistencias || 0}</p>
+            <div class="ficha-avatar">
+              ${ficha.avatar ? `<img src="${ficha.avatar}" alt="${ficha.nome}">` : '<i class="fas fa-user fa-2x"></i>'}
+            </div>
+            <div class="ficha-info">
+              <h3>${ficha.nome || 'Sem nome'}</h3>
+              <p><strong>Classe:</strong> ${ficha.classe || '-'} | <strong>Posição:</strong> ${ficha.posicao || '-'}</p>
+              <p><i class="fas fa-futbol"></i> ${ficha.gols || 0} Gols | 
+                 <i class="fas fa-shoe-prints"></i> ${ficha.assistencias || 0} Assistências</p>
+            </div>
           `;
           listaFichas.appendChild(fichaEl);
         });
@@ -1100,6 +1387,79 @@
         console.error('Erro ao carregar fichas:', error);
         alert('Erro ao carregar fichas: ' + error.message);
       }
+    }
+
+    // Mostrar ficha completa no modal
+    async function mostrarFichaCompleta(id, ficha) {
+      const modalTitulo = document.getElementById('modal-ficha-titulo');
+      const modalConteudo = document.getElementById('modal-ficha-conteudo');
+      
+      modalTitulo.textContent = `FICHA: ${ficha.nome || 'Sem nome'}`;
+      
+      // Formatar os dados da ficha para exibição
+      let html = `
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+          <div style="flex: 1;">
+            <div class="avatar" style="width: 200px; height: 200px; margin: 0 auto 20px;">
+              ${ficha.avatar ? `<img src="${ficha.avatar}" alt="${ficha.nome}" style="display: block;">` : '<span>Sem imagem</span>'}
+            </div>
+            
+            <h3>Informações Básicas</h3>
+            <p><strong>Nome:</strong> ${ficha.nome || '-'}</p>
+            <p><strong>Classe:</strong> ${ficha.classe || '-'}</p>
+            <p><strong>Posição:</strong> ${ficha.posicao || '-'}</p>
+            <p><strong>Idade:</strong> ${ficha.idade || '-'}</p>
+            <p><strong>Altura:</strong> ${ficha.altura || '-'}m</p>
+            <p><strong>Peso:</strong> ${ficha.peso || '-'}kg</p>
+            <p><strong>Perna Dominante:</strong> ${ficha.perna || '-'}</p>
+            <p><strong>Dom Natural:</strong> ${ficha.dom || '-'}</p>
+          </div>
+          
+          <div style="flex: 1;">
+            <h3>Estatísticas</h3>
+            <p><i class="fas fa-futbol"></i> <strong>Gols:</strong> ${ficha.gols || 0}</p>
+            <p><i class="fas fa-shoe-prints"></i> <strong>Assistências:</strong> ${ficha.assistencias || 0}</p>
+            ${ficha.posicao === 'goleiro' || ficha.posicao === 'zagueiro' ? `<p><i class="fas fa-shield-alt"></i> <strong>SG:</strong> ${ficha.sg || 0}</p>` : ''}
+            <p><i class="fas fa-running"></i> <strong>Deslocamento:</strong> ${ficha.deslocamento || 10}</p>
+            <p><i class="fas fa-wind"></i> <strong>Fôlego:</strong> ${ficha.folegoAtual || 0}/${ficha.folegoTotal || 10}</p>
+            
+            <h3 style="margin-top: 20px;">Atributos</h3>
+            <p><i class="fas fa-fist-raised"></i> <strong>Potência:</strong> ${ficha.potencia || 0}</p>
+            <p><i class="fas fa-futbol"></i> <strong>Técnica:</strong> ${ficha.tecnica || 0}</p>
+            <p><i class="fas fa-running"></i> <strong>Velocidade:</strong> ${ficha.velocidade || 0}</p>
+            <p><i class="fas fa-user-ninja"></i> <strong>Agilidade:</strong> ${ficha.agilidade || 0}</p>
+            <p><i class="fas fa-gem"></i> <strong>Ego:</strong> ${ficha.ego || 0}</p>
+          </div>
+        </div>
+        
+        <h3>Perícias</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+      `;
+      
+      // Adicionar perícias
+      for (const [pericia, valores] of Object.entries(ficha.pericias || {})) {
+        html += `<p><strong>${pericia}:</strong> ${valores.total || 0} (Base: ${Math.floor(valores.total - (valores.manual || 0))}, Bônus: ${valores.manual || 0})</p>`;
+      }
+      
+      html += `</div>`;
+      
+      // Adicionar habilidades
+      if (ficha.habilidades) {
+        html += `
+          <h3 style="margin-top: 20px;">Habilidades Especiais</h3>
+          <div style="background: rgba(30,60,40,0.3); padding: 15px; border-radius: 8px;">
+            ${ficha.habilidades.replace(/\n/g, '<br>')}
+          </div>
+        `;
+      }
+      
+      modalConteudo.innerHTML = html;
+      document.getElementById('modal-ficha').style.display = 'flex';
+    }
+
+    // Fechar modal de ficha
+    function fecharModalFicha() {
+      document.getElementById('modal-ficha').style.display = 'none';
     }
 
     // Funções de login
@@ -1135,12 +1495,17 @@
     auth.onAuthStateChanged(user => {
       const menuLogin = document.getElementById('menu-login');
       if (user) {
-        menuLogin.textContent = 'Sair';
+        menuLogin.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
         menuLogin.onclick = logout;
         menuLogin.style.background = '#d9534f';
         carregarFichaDoUsuario();
+        
+        // Verificar se é admin
+        db.collection('admins').doc(user.uid).get().then(doc => {
+          isAdmin = doc.exists;
+        });
       } else {
-        menuLogin.textContent = 'Entrar';
+        menuLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
         menuLogin.onclick = login;
         menuLogin.style.background = '';
       }
@@ -1151,8 +1516,6 @@
       // Inicializar Firebase Auth
       auth.onAuthStateChanged(user => {
         if (user) {
-          // Usuário logado
-          console.log('Usuário logado:', user.uid);
           carregarFichaDoUsuario();
         }
       });
@@ -1163,20 +1526,17 @@
       calcularPericias();
       
       // Event listeners
-      document.getElementById('altura').addEventListener('change', calcularPericias);
-      document.getElementById('peso').addEventListener('change', calcularPericias);
-      document.getElementById('perna').addEventListener('change', calcularPericias);
-      document.getElementById('folego-atual').addEventListener('input', atualizarBarraFolego);
-      document.getElementById('folego-total').addEventListener('input', atualizarBarraFolego);
-      document.getElementById('posicao').addEventListener('change', atualizarCamposPosicao);
+      const campos = ['altura', 'peso', 'perna', 'folego-atual', 'folego-total', 'posicao'];
+      campos.forEach(id => {
+        document.getElementById(id).addEventListener('change', calcularPericias);
+      });
       
-      // Event listeners para atributos
+      // Event listeners para atributos e perícias
       const atributos = ['potencia', 'tecnica', 'velocidade', 'agilidade', 'ego'];
       atributos.forEach(attr => {
         document.getElementById(attr).addEventListener('input', calcularPericias);
       });
       
-      // Event listeners para perícias manuais
       document.querySelectorAll('.pericia-manual').forEach(input => {
         input.addEventListener('input', calcularPericias);
       });
