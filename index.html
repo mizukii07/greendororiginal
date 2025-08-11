@@ -626,16 +626,49 @@
               <option value="arruaceiro">Arruaceiro</option>
               <option value="passador">O Passador Glacial</option>
             </select>
+            
+            <label for="time"><i class="fas fa-users"></i> Time</label>
+            <select id="time">
+              <option value="">Selecione seu time...</option>
+              <option value="v1">Time V1</option>
+              <option value="w1">Time W1</option>
+              <option value="x1">Time X1</option>
+              <option value="y1">Time Y1</option>
+              <option value="z1">Time Z1</option>
+              <option value="v2">Time V2</option>
+              <option value="w2">Time W2</option>
+              <option value="x2">Time X2</option>
+              <option value="y2">Time Y2</option>
+              <option value="z2">Time Z2</option>
+            </select>
           </div>
           
           <div class="dados-jogador">
-            <label for="posicao"><i class="fas fa-map-marker-alt"></i> Posição</label>
+            <label for="posicao"><i class="fas fa-map-marker-alt"></i> Posição Principal</label>
             <select id="posicao">
               <option value="goleiro">Goleiro</option>
               <option value="zagueiro">Zagueiro</option>
-              <option value="lateral">Lateral</option>
-              <option value="meia">Meia</option>
-              <option value="atacante">Atacante</option>
+              <option value="lateral_direito">Lateral Direito</option>
+              <option value="lateral_esquerdo">Lateral Esquerdo</option>
+              <option value="volante">Volante</option>
+              <option value="meia_ofensivo">Meia Ofensivo</option>
+              <option value="ponta_direita">Ponta Direita</option>
+              <option value="ponta_esquerda">Ponta Esquerda</option>
+              <option value="centroavante">Centroavante</option>
+            </select>
+            
+            <label for="posicao_secundaria"><i class="fas fa-map-marker-alt"></i> Posição Secundária</label>
+            <select id="posicao_secundaria">
+              <option value="nenhuma">Nenhuma</option>
+              <option value="goleiro">Goleiro</option>
+              <option value="zagueiro">Zagueiro</option>
+              <option value="lateral_direito">Lateral Direito</option>
+              <option value="lateral_esquerdo">Lateral Esquerdo</option>
+              <option value="volante">Volante</option>
+              <option value="meia_ofensivo">Meia Ofensivo</option>
+              <option value="ponta_direita">Ponta Direita</option>
+              <option value="ponta_esquerda">Ponta Esquerda</option>
+              <option value="centroavante">Centroavante</option>
             </select>
             
             <label for="altura"><i class="fas fa-arrows-alt-v"></i> Altura (m)</label>
@@ -721,23 +754,23 @@
           <!-- POTÊNCIA -->
           <div class="card-atributo">
             <h3><i class="fas fa-fist-raised"></i> POTÊNCIA</h3>
-            <input type="number" id="potencia" class="atributo-input" min="-50" max="50" value="0">
+            <input type="number" id="potencia" class="atributo-input" min="-100" max="100" value="0">
             
             <div class="pericia-item">
               <span class="pericia-nome">Corpo a Corpo</span>
-              <input type="number" class="pericia-manual" data-pericia="corpo" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="corpo" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="corpo">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Cabeceio</span>
-              <input type="number" class="pericia-manual" data-pericia="cabeceio" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="cabeceio" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="cabeceio">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Chute</span>
-              <input type="number" class="pericia-manual" data-pericia="chute" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="chute" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="chute">0</span>
             </div>
           </div>
@@ -745,35 +778,35 @@
           <!-- TÉCNICA -->
           <div class="card-atributo">
             <h3><i class="fas fa-futbol"></i> TÉCNICA</h3>
-            <input type="number" id="tecnica" class="atributo-input" min="-50" max="50" value="0">
+            <input type="number" id="tecnica" class="atributo-input" min="-100" max="100" value="0">
             
             <div class="pericia-item">
               <span class="pericia-nome">Passe</span>
-              <input type="number" class="pericia-manual" data-pericia="passe" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="passe" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="passe">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Drible/Finta</span>
-              <input type="number" class="pericia-manual" data-pericia="drible" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="drible" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="drible">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Domínio</span>
-              <input type="number" class="pericia-manual" data-pericia="dominio" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="dominio" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="dominio">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Pontaria</span>
-              <input type="number" class="pericia-manual" data-pericia="pontaria" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="pontaria" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="pontaria">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Roubo de Bola</span>
-              <input type="number" class="pericia-manual" data-pericia="roubo" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="roubo" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="roubo">0</span>
             </div>
           </div>
@@ -781,17 +814,17 @@
           <!-- VELOCIDADE -->
           <div class="card-atributo">
             <h3><i class="fas fa-running"></i> VELOCIDADE</h3>
-            <input type="number" id="velocidade" class="atributo-input" min="-50" max="50" value="0">
+            <input type="number" id="velocidade" class="atributo-input" min="-100" max="100" value="0">
             
             <div class="pericia-item">
               <span class="pericia-nome">Corrida Longa Distância</span>
-              <input type="number" class="pericia-manual" data-pericia="corrida" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="corrida" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="corrida">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Explosão</span>
-              <input type="number" class="pericia-manual" data-pericia="explosao" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="explosao" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="explosao">0</span>
             </div>
           </div>
@@ -799,29 +832,29 @@
           <!-- AGILIDADE -->
           <div class="card-atributo">
             <h3><i class="fas fa-user-ninja"></i> AGILIDADE</h3>
-            <input type="number" id="agilidade" class="atributo-input" min="-50" max="50" value="0">
+            <input type="number" id="agilidade" class="atributo-input" min="-100" max="100" value="0">
             
             <div class="pericia-item">
               <span class="pericia-nome">Reflexos</span>
-              <input type="number" class="pericia-manual" data-pericia="reflexos" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="reflexos" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="reflexos">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Defesa</span>
-              <input type="number" class="pericia-manual" data-pericia="defesa" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="defesa" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="defesa">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Furtividade</span>
-              <input type="number" class="pericia-manual" data-pericia="furtividade" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="furtividade" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="furtividade">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Acrobacia</span>
-              <input type="number" class="pericia-manual" data-pericia="acrobacia" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="acrobacia" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="acrobacia">0</span>
             </div>
           </div>
@@ -829,35 +862,35 @@
           <!-- EGO -->
           <div class="card-atributo">
             <h3><i class="fas fa-gem"></i> EGO</h3>
-            <input type="number" id="ego" class="atributo-input" min="-50" max="50" value="0">
+            <input type="number" id="ego" class="atributo-input" min="-100" max="100" value="0">
             
             <div class="pericia-item">
               <span class="pericia-nome">Intimidação</span>
-              <input type="number" class="pericia-manual" data-pericia="intimidacao" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="intimidacao" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="intimidacao">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Presença</span>
-              <input type="number" class="pericia-manual" data-pericia="presenca" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="presenca" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="presenca">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Enganação</span>
-              <input type="number" class="pericia-manual" data-pericia="enganacao" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="enganacao" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="enganacao">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Diplomacia</span>
-              <input type="number" class="pericia-manual" data-pericia="diplomacia" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="diplomacia" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="diplomacia">0</span>
             </div>
             
             <div class="pericia-item">
               <span class="pericia-nome">Intuição</span>
-              <input type="number" class="pericia-manual" data-pericia="intuicao" min="-10" max="5" value="0">
+              <input type="number" class="pericia-manual" data-pericia="intuicao" min="-100" max="100" value="0">
               <span class="pericia-total" data-pericia="intuicao">0</span>
             </div>
           </div>
@@ -950,7 +983,7 @@
       apiKey: "AIzaSyArKOkY72tx9qOelx_oeMnUuS4XZe58df4",
       authDomain: "green-door-rpg.firebaseapp.com",
       projectId: "green-door-rpg",
-      storageBucket: "green-door-rpg.firebasestorage.app",
+      storageBucket: "green-door-rpg.appspot.com",
       messagingSenderId: "1062933456039",
       appId: "1:1062933456039:web:c292177334060d46a1e782"
     };
@@ -960,55 +993,61 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // Tabelas de bônus de altura/peso
-    const bonusAltura = {
-      '1.50-1.55': { drible: 3, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -2 },
-      '1.56-1.60': { drible: 2, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -1 },
-      '1.61-1.65': { drible: 2, explosao: 1, reflexos: 2, cabeceio: -2, intimidacao: -1, defesa: -1 },
-      '1.66-1.70': { drible: 2, explosao: 1, reflexos: 1, cabeceio: -2, defesa: -1 },
-      '1.71-1.75': { drible: 1, reflexos: 1, cabeceio: -1 },
-      '1.76-1.80': {},
-      '1.81-1.85': { cabeceio: 1, intimidacao: 1, defesa: 1, explosao: -1 },
-      '1.86-1.90': { cabeceio: 2, intimidacao: 1, defesa: 2, explosao: -2 },
-      '1.91-1.95': { cabeceio: 2, intimidacao: 2, defesa: 2, explosao: -2, drible: -1 },
-      '1.96-2.00': { cabeceio: 3, intimidacao: 2, defesa: 3, explosao: -3, drible: -2, reflexos: -1 },
-      '2.01-2.05': { cabeceio: 3, intimidacao: 3, defesa: 4, explosao: -4, drible: -2, reflexos: -2 }
+    // Mapeamento de posições para nomes amigáveis
+    const mapaPosicoes = {
+      'goleiro': 'Goleiro',
+      'zagueiro': 'Zagueiro',
+      'lateral_direito': 'Lateral Direito',
+      'lateral_esquerdo': 'Lateral Esquerdo',
+      'volante': 'Volante',
+      'meia_ofensivo': 'Meia Ofensivo',
+      'ponta_direita': 'Ponta Direita',
+      'ponta_esquerda': 'Ponta Esquerda',
+      'centroavante': 'Centroavante',
+      'nenhuma': 'Nenhuma'
     };
 
-    const bonusPeso = {
-      '50-55': { explosao: 3, acrobacia: 2, furtividade: 2, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -2 },
-      '56-60': { explosao: 2, acrobacia: 2, furtividade: 1, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -1 },
-      '61-65': { explosao: 2, acrobacia: 1, furtividade: 1, reflexos: 1, corpo: -2, intimidacao: -1 },
-      '66-70': { explosao: 2, acrobacia: 1, reflexos: 1, corpo: -2 },
-      '71-75': {},
-      '76-80': { corpo: 1, chute: 1, defesa: 1, explosao: -1 },
-      '81-85': { corpo: 2, chute: 1, defesa: 1, explosao: -2, reflexos: -1 },
-      '86-90': { corpo: 2, chute: 2, defesa: 2, explosao: -2, reflexos: -1 },
-      '91-95': { corpo: 3, chute: 2, defesa: 3, explosao: -3, reflexos: -2 },
-      '96-100': { corpo: 3, chute: 3, defesa: 4, explosao: -4, reflexos: -2, drible: -1 }
+    // Mapeamento de times para nomes amigáveis
+    const mapaTimes = {
+      'v1': 'Time V1',
+      'w1': 'Time W1',
+      'x1': 'Time X1',
+      'y1': 'Time Y1',
+      'z1': 'Time Z1',
+      'v2': 'Time V2',
+      'w2': 'Time W2',
+      'x2': 'Time X2',
+      'y2': 'Time Y2',
+      'z2': 'Time Z2'
+    };
+
+    // Mapeamento de perícias para nomes amigáveis
+    const mapaPericias = {
+      corpo: "Corpo a Corpo",
+      cabeceio: "Cabeceio",
+      chute: "Chute",
+      passe: "Passe",
+      drible: "Drible/Finta",
+      dominio: "Domínio",
+      pontaria: "Pontaria",
+      roubo: "Roubo de Bola",
+      corrida: "Corrida Longa Distância",
+      explosao: "Explosão",
+      reflexos: "Reflexos",
+      defesa: "Defesa",
+      furtividade: "Furtividade",
+      acrobacia: "Acrobacia",
+      intimidacao: "Intimidação",
+      presenca: "Presença",
+      enganacao: "Enganação",
+      diplomacia: "Diplomacia",
+      intuicao: "Intuição"
     };
 
     // Variáveis globais
     let escolhaAmbidestro = '';
     let fichaId = '';
     let isAdmin = false;
-
-    // Função para identificar intervalo
-    function getBonus(value, table) {
-      const numValue = Number(value);
-      if (isNaN(numValue)) return {};
-      
-      for (const range in table) {
-        const [minStr, maxStr] = range.split('-');
-        const min = Number(minStr);
-        const max = Number(maxStr);
-        
-        if (numValue >= min && numValue <= max) {
-          return table[range] || {};
-        }
-      }
-      return {};
-    }
 
     // Atualizar barra de fôlego
     function atualizarBarraFolego() {
@@ -1044,28 +1083,8 @@
 
     // Calcular todas as perícias
     function calcularPericias() {
-      const altura = parseFloat(document.getElementById('altura').value) || 1.75;
-      const peso = parseInt(document.getElementById('peso').value) || 70;
       const perna = document.getElementById('perna').value;
-      const posicao = document.getElementById('posicao').value;
       const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 10;
-
-      const bonusA = getBonus(altura, bonusAltura);
-      const bonusP = getBonus(peso, bonusPeso);
-
-      // Função para ajustar bônus de defesa para não goleiros
-      function ajustarDefesa(bonus) {
-        if (posicao !== 'goleiro') {
-          if (bonus.defesa && (altura >= 1.86 || peso >= 86)) {
-            bonus.defesa = Math.floor(bonus.defesa / 2);
-          }
-        }
-        return bonus;
-      }
-
-      // Aplicar ajustes
-      const bonusAjustadoA = ajustarDefesa({...bonusA});
-      const bonusAjustadoP = ajustarDefesa({...bonusP});
 
       // Verificar se aplica penalidade de fôlego
       let staminaPenalty = 1;
@@ -1093,10 +1112,6 @@
 
         // Cálculo base (metade do atributo)
         let valor = Math.floor(valorAtributo / 2);
-
-        // Aplicar bônus de altura/peso
-        if (bonusAjustadoA[periciaId]) valor += bonusAjustadoA[periciaId];
-        if (bonusAjustadoP[periciaId]) valor += bonusAjustadoP[periciaId];
 
         // Aplicar ambidestria
         if (perna === 'ambidestro') {
@@ -1232,17 +1247,19 @@
         idade: document.getElementById('idade').value,
         classe: document.getElementById('classe').value,
         posicao: document.getElementById('posicao').value,
+        posicao_secundaria: document.getElementById('posicao_secundaria').value,
         altura: document.getElementById('altura').value,
         peso: document.getElementById('peso').value,
         perna: document.getElementById('perna').value,
         escolhaAmbidestro: escolhaAmbidestro,
         dom: document.getElementById('dom').value,
-        folegoAtual: document.getElementById('folego-atual').value,
-        folegoTotal: document.getElementById('folego-total').value,
+        folegoAtual: parseInt(document.getElementById('folego-atual').value) || 0,
+        folegoTotal: parseInt(document.getElementById('folego-total').value) || 10,
         gols: document.getElementById('gols').value,
         assistencias: document.getElementById('assistencias').value,
         sg: document.getElementById('sg').value,
         deslocamento: document.getElementById('deslocamento').value,
+        time: document.getElementById('time').value,
         avatar: document.getElementById('avatar-img').src || '',
         habilidades: document.getElementById('habilidades').value,
         pericias: {}
@@ -1306,6 +1323,7 @@
           document.getElementById('idade').value = ficha.idade || 18;
           document.getElementById('classe').value = ficha.classe || '';
           document.getElementById('posicao').value = ficha.posicao || 'goleiro';
+          document.getElementById('posicao_secundaria').value = ficha.posicao_secundaria || 'nenhuma';
           document.getElementById('altura').value = ficha.altura || 1.75;
           document.getElementById('peso').value = ficha.peso || 70;
           document.getElementById('perna').value = ficha.perna || 'direita';
@@ -1317,6 +1335,7 @@
           document.getElementById('assistencias').value = ficha.assistencias || 0;
           document.getElementById('sg').value = ficha.sg || 0;
           document.getElementById('deslocamento').value = ficha.deslocamento || 10;
+          document.getElementById('time').value = ficha.time || '';
           document.getElementById('habilidades').value = ficha.habilidades || '';
           
           // Avatar
@@ -1376,7 +1395,7 @@
             </div>
             <div class="ficha-info">
               <h3>${ficha.nome || 'Sem nome'}</h3>
-              <p><strong>Classe:</strong> ${ficha.classe || '-'} | <strong>Posição:</strong> ${ficha.posicao || '-'}</p>
+              <p><strong>Time:</strong> ${mapaTimes[ficha.time] || '-'} | <strong>Posição:</strong> ${mapaPosicoes[ficha.posicao] || '-'} ${ficha.posicao_secundaria && ficha.posicao_secundaria !== 'nenhuma' ? `(${mapaPosicoes[ficha.posicao_secundaria]})` : ''}</p>
               <p><i class="fas fa-futbol"></i> ${ficha.gols || 0} Gols | 
                  <i class="fas fa-shoe-prints"></i> ${ficha.assistencias || 0} Assistências</p>
             </div>
@@ -1407,11 +1426,13 @@
             <h3>Informações Básicas</h3>
             <p><strong>Nome:</strong> ${ficha.nome || '-'}</p>
             <p><strong>Classe:</strong> ${ficha.classe || '-'}</p>
-            <p><strong>Posição:</strong> ${ficha.posicao || '-'}</p>
+            <p><strong>Time:</strong> ${mapaTimes[ficha.time] || '-'}</p>
+            <p><strong>Posição Principal:</strong> ${mapaPosicoes[ficha.posicao] || '-'}</p>
+            <p><strong>Posição Secundária:</strong> ${ficha.posicao_secundaria ? mapaPosicoes[ficha.posicao_secundaria] : 'Nenhuma'}</p>
             <p><strong>Idade:</strong> ${ficha.idade || '-'}</p>
             <p><strong>Altura:</strong> ${ficha.altura || '-'}m</p>
             <p><strong>Peso:</strong> ${ficha.peso || '-'}kg</p>
-            <p><strong>Perna Dominante:</strong> ${ficha.perna || '-'}</p>
+            <p><strong>Perna Dominante:</strong> ${ficha.perna || '-'} ${ficha.perna === 'ambidestro' ? `(${ficha.escolhaAmbidestro})` : ''}</p>
             <p><strong>Dom Natural:</strong> ${ficha.dom || '-'}</p>
           </div>
           
@@ -1437,8 +1458,9 @@
       `;
       
       // Adicionar perícias
-      for (const [pericia, valores] of Object.entries(ficha.pericias || {})) {
-        html += `<p><strong>${pericia}:</strong> ${valores.total || 0} (Base: ${Math.floor(valores.total - (valores.manual || 0))}, Bônus: ${valores.manual || 0})</p>`;
+      for (const [periciaId, valores] of Object.entries(ficha.pericias || {})) {
+        const nomePericia = mapaPericias[periciaId] || periciaId;
+        html += `<p><strong>${nomePericia}:</strong> ${valores.total || 0} (Base: ${Math.floor(valores.total - (valores.manual || 0))}, Bônus: ${valores.manual || 0})</p>`;
       }
       
       html += `</div>`;
@@ -1526,7 +1548,7 @@
       calcularPericias();
       
       // Event listeners
-      const campos = ['altura', 'peso', 'perna', 'folego-atual', 'folego-total', 'posicao'];
+      const campos = ['altura', 'peso', 'perna', 'folego-atual', 'folego-total', 'posicao', 'posicao_secundaria'];
       campos.forEach(id => {
         document.getElementById(id).addEventListener('change', calcularPericias);
       });
