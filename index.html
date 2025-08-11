@@ -1,325 +1,172 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Perícias de Futebol</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
+<script>
+  // Tabelas de bônus de altura/peso
+  const bonusAltura = {
+    '1.50-1.55': { drible: 3, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -2 },
+    '1.56-1.60': { drible: 2, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -1 },
+    '1.61-1.65': { drible: 2, explosao: 1, reflexos: 2, cabeceio: -2, intimidacao: -1, defesa: -1 },
+    '1.66-1.70': { drible: 2, explosao: 1, reflexos: 1, cabeceio: -2, defesa: -1 },
+    '1.71-1.75': { drible: 1, reflexos: 1, cabeceio: -1 },
+    '1.76-1.80': {},
+    '1.81-1.85': { cabeceio: 1, intimidacao: 1, defesa: 1, explosao: -1 },
+    '1.86-1.90': { cabeceio: 2, intimidacao: 1, defesa: 2, explosao: -2 },
+    '1.91-1.95': { cabeceio: 2, intimidacao: 2, defesa: 2, explosao: -2, drible: -1 },
+    '1.96-2.00': { cabeceio: 3, intimidacao: 2, defesa: 3, explosao: -3, drible: -2, reflexos: -1 },
+    '2.01-2.05': { cabeceio: 3, intimidacao: 3, defesa: 4, explosao: -4, drible: -2, reflexos: -2 }
+  };
+
+  const bonusPeso = {
+    '50-55': { explosao: 3, acrobacia: 2, furtividade: 2, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -2 },
+    '56-60': { explosao: 2, acrobacia: 2, furtividade: 1, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -1 },
+    '61-65': { explosao: 2, acrobacia: 1, furtividade: 1, reflexos: 1, corpo: -2, intimidacao: -1 },
+    '66-70': { explosao: 2, acrobacia: 1, reflexos: 1, corpo: -2 },
+    '71-75': {},
+    '76-80': { corpo: 1, chute: 1, defesa: 1, explosao: -1 },
+    '81-85': { corpo: 2, chute: 1, defesa: 1, explosao: -2, reflexos: -1 },
+    '86-90': { corpo: 2, chute: 2, defesa: 2, explosao: -2, reflexos: -1 },
+    '91-95': { corpo: 3, chute: 2, defesa: 3, explosao: -3, reflexos: -2 },
+    '96-100': { corpo: 3, chute: 3, defesa: 4, explosao: -4, reflexos: -2, drible: -1 }
+  };
+
+  // Função para identificar intervalo
+  function getBonus(value, table) {
+    const numValue = Number(value);
+    if (isNaN(numValue)) return {};
     
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    
-    input, select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    
-    .card-atributo {
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background-color: #f9f9f9;
-    }
-    
-    .card-atributo h3 {
-      margin-top: 0;
-    }
-    
-    .pericia-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    
-    .progress-bar {
-      height: 20px;
-      background-color: #e0e0e0;
-      border-radius: 4px;
-      margin-top: 5px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background-color: #4CAF50;
-      width: 0%;
-    }
-    
-    .low-stamina {
-      opacity: 0.7;
-      color: #FFA500;
-    }
-    
-    .no-stamina {
-      opacity: 0.5;
-      color: #FF0000;
-    }
-    
-    #sg-container {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Sistema de Perícias de Futebol</h1>
-    
-    <div class="form-group">
-      <label for="altura">Altura (m):</label>
-      <input type="number" id="altura" step="0.01" min="1.50" max="2.05" value="1.75" onchange="calcularPericias()">
-    </div>
-    
-    <div class="form-group">
-      <label for="peso">Peso (kg):</label>
-      <input type="number" id="peso" min="50" max="100" value="70" onchange="calcularPericias()">
-    </div>
-    
-    <div class="form-group">
-      <label for="perna">Perna dominante:</label>
-      <select id="perna" onchange="calcularPericias()">
-        <option value="direita">Direita</option>
-        <option value="esquerda">Esquerda</option>
-        <option value="ambidestro">Ambidestro</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="posicao">Posição:</label>
-      <select id="posicao" onchange="calcularPericias(); atualizarCamposPosicao()">
-        <option value="goleiro">Goleiro</option>
-        <option value="zagueiro">Zagueiro</option>
-        <option value="lateral_direito">Lateral Direito</option>
-        <option value="lateral_esquerdo">Lateral Esquerdo</option>
-        <option value="volante">Volante</option>
-        <option value="meia">Meia</option>
-        <option value="atacante">Atacante</option>
-      </select>
-    </div>
-    
-    <div id="sg-container" class="form-group">
-      <label for="sg">SG (Sangue Frio):</label>
-      <input type="number" id="sg" min="0" max="10" value="0">
-    </div>
-    
-    <div class="form-group">
-      <label for="folego-atual">Fôlego Atual:</label>
-      <input type="number" id="folego-atual" min="0" max="20" value="10" onchange="calcularPericias()">
-    </div>
-    
-    <div class="form-group">
-      <label for="folego-total">Fôlego Total:</label>
-      <input type="number" id="folego-total" min="10" max="20" value="10" onchange="calcularPericias()">
-    </div>
-    
-    <div class="form-group">
-      <label>Barra de Fôlego:</label>
-      <div class="progress-bar">
-        <div id="barra-folego" class="progress-fill" style="width: 100%"></div>
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="deslocamento">Deslocamento:</label>
-      <input type="number" id="deslocamento" readonly>
-    </div>
-    
-    <!-- Exemplo de card de atributo -->
-    <div class="card-atributo">
-      <h3>Atributo Físico</h3>
-      <div class="form-group">
-        <label for="velocidade">Velocidade:</label>
-        <input type="number" id="velocidade" class="atributo-input" min="0" max="20" value="10" onchange="calcularPericias()">
-      </div>
+    for (const range in table) {
+      const [minStr, maxStr] = range.split('-');
+      const min = Number(minStr);
+      const max = Number(maxStr);
       
-      <div class="pericia-item">
-        <span>Explosão:</span>
-        <input type="number" class="pericia-manual" data-pericia="explosao" min="0" max="10" value="0" onchange="calcularPericias()">
-        <span class="pericia-total">0</span>
-      </div>
-      
-      <div class="pericia-item">
-        <span>Furtividade:</span>
-        <input type="number" class="pericia-manual" data-pericia="furtividade" min="0" max="10" value="0" onchange="calcularPericias()">
-        <span class="pericia-total">0</span>
-      </div>
-    </div>
-    
-    <!-- Você pode adicionar mais cards de atributos conforme necessário -->
-  </div>
-
-  <script>
-    // Variável global para escolha ambidestra
-    let escolhaAmbidestro = 'chute'; // Valor padrão
-
-    // Tabelas de bônus de altura/peso CORRIGIDAS
-    const bonusAltura = {
-      '1.50-1.55': { drible: 3, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -2 },
-      '1.56-1.60': { drible: 2, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -1 },
-      '1.61-1.65': { drible: 2, explosao: 1, reflexos: 2, cabeceio: -2, intimidacao: -1, defesa: -1 },
-      '1.66-1.70': { drible: 2, explosao: 1, reflexos: 1, cabeceio: -2, defesa: -1 },
-      '1.71-1.75': { drible: 1, reflexos: 1, cabeceio: -1 },
-      '1.76-1.80': {},
-      '1.81-1.85': { cabeceio: 1, intimidacao: 1, defesa: 1, explosao: -1 },
-      '1.86-1.90': { cabeceio: 2, intimidacao: 1, defesa: 2, explosao: -2 },
-      '1.91-1.95': { cabeceio: 2, intimidacao: 2, defesa: 2, explosao: -2, drible: -1 },
-      '1.96-2.00': { cabeceio: 3, intimidacao: 2, defesa: 3, explosao: -3, drible: -2, reflexos: -1 },
-      '2.01-2.05': { cabeceio: 3, intimidacao: 3, defesa: 4, explosao: -4, drible: -2, reflexos: -2 }
-    };
-
-    const bonusPeso = {
-      '50-55': { explosao: 3, acrobacia: 2, furtividade: 2, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -2 },
-      '56-60': { explosao: 2, acrobacia: 2, furtividade: 1, reflexos: 1, corpo: -3, intimidacao: -2, defesa: -1 },
-      '61-65': { explosao: 2, acrobacia: 1, furtividade: 1, reflexos: 1, corpo: -2, intimidacao: -1 },
-      '66-70': { explosao: 2, acrobacia: 1, reflexos: 1, corpo: -2 },
-      '71-75': {},
-      '76-80': { corpo: 1, chute: 1, defesa: 1, explosao: -1 },
-      '81-85': { corpo: 2, chute: 1, defesa: 1, explosao: -2, reflexos: -1 },
-      '86-90': { corpo: 2, chute: 2, defesa: 2, explosao: -2, reflexos: -1 },
-      '91-95': { corpo: 3, chute: 2, defesa: 3, explosao: -3, reflexos: -2 },
-      '96-100': { corpo: 3, chute: 3, defesa: 4, explosao: -4, reflexos: -2, drible: -1 }
-    };
-
-    // Função para identificar intervalo
-    function getBonus(value, table) {
-      const numValue = Number(value);
-      if (isNaN(numValue)) return {};
-      
-      for (const range in table) {
-        const [minStr, maxStr] = range.split('-');
-        const min = Number(minStr);
-        const max = Number(maxStr);
-        
-        if (numValue >= min && numValue <= max) {
-          return table[range] || {};
-        }
-      }
-      return {};
-    }
-
-    // Calcular todas as perícias - FUNÇÃO CORRIGIDA
-    function calcularPericias() {
-      const altura = parseFloat(document.getElementById('altura').value) || 1.75;
-      const peso = parseInt(document.getElementById('peso').value) || 70;
-      const perna = document.getElementById('perna').value;
-      const posicao = document.getElementById('posicao').value;
-      const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 10;
-      const folegoTotal = parseInt(document.getElementById('folego-total').value) || 10;
-
-      const bonusA = getBonus(altura, bonusAltura);
-      const bonusP = getBonus(peso, bonusPeso);
-
-      // Ajustar bônus de defesa para não goleiros
-      function ajustarDefesa(bonus) {
-        if (posicao !== 'goleiro') {
-          if (bonus.defesa && (altura >= 1.86 || peso >= 86)) {
-            bonus.defesa = Math.floor(bonus.defesa / 2);
-          }
-        }
-        return bonus;
-      }
-
-      const bonusAjustadoA = ajustarDefesa({...bonusA});
-      const bonusAjustadoP = ajustarDefesa({...bonusP});
-
-      // Atualizar barra de fôlego - CORRIGIDO
-      const porcentagemFolego = Math.min(100, (folegoAtual / folegoTotal) * 100);
-      document.getElementById('barra-folego').style.width = `${porcentagemFolego}%`;
-      
-      // Verificar se aplica penalidade de fôlego
-      let staminaPenalty = 1;
-      let staminaClass = '';
-      
-      if (folegoAtual <= 10 && folegoAtual > 0) {
-        staminaPenalty = 0.5;
-        staminaClass = 'low-stamina';
-      } else if (folegoAtual === 0) {
-        staminaPenalty = 0;
-        staminaClass = 'no-stamina';
-      }
-
-      document.querySelectorAll('.pericia-item').forEach(item => {
-        item.classList.remove('low-stamina', 'no-stamina');
-        if (staminaClass) {
-          item.classList.add(staminaClass);
-        }
-        
-        const periciaId = item.querySelector('.pericia-manual').dataset.pericia;
-        const card = item.closest('.card-atributo');
-        const atributoId = card.querySelector('.atributo-input').id;
-        const valorAtributo = parseInt(document.getElementById(atributoId).value) || 0;
-
-        // Cálculo base (metade do atributo arredondado para baixo)
-        let valor = Math.floor(valorAtributo / 2);
-
-        // Aplicar bônus de altura/peso
-        if (bonusAjustadoA[periciaId]) valor += bonusAjustadoA[periciaId];
-        if (bonusAjustadoP[periciaId]) valor += bonusAjustadoP[periciaId];
-
-        // Aplicar ambidestria - CORRIGIDO
-        if (perna === 'ambidestro') {
-          if (['passe','drible','dominio','roubo'].includes(periciaId)) {
-            valor += 5;
-          }
-          if ((periciaId === 'pontaria' && escolhaAmbidestro === 'pontaria') || 
-              (periciaId === 'chute' && escolhaAmbidestro === 'chute')) {
-            valor += 5;
-          }
-        }
-
-        // Aplicar penalidade de fôlego (apenas visual)
-        const pontosManuais = parseInt(item.querySelector('.pericia-manual').value) || 0;
-        item.querySelector('.pericia-total').textContent = valor + pontosManuais;
-      });
-
-      // Atualizar deslocamento
-      const velocidade = parseInt(document.getElementById('velocidade').value) || 0;
-      document.getElementById('deslocamento').value = 10 + Math.floor(velocidade * staminaPenalty);
-    }
-
-    // Mostrar/ocultar campo SG - CORRIGIDO
-    function atualizarCamposPosicao() {
-      const posicao = document.getElementById('posicao').value;
-      const sgContainer = document.getElementById('sg-container');
-      
-      if (['goleiro', 'zagueiro', 'lateral_direito', 'lateral_esquerdo'].includes(posicao)) {
-        sgContainer.style.display = 'block';
-      } else {
-        sgContainer.style.display = 'none';
+      if (numValue >= min && numValue <= max) {
+        return table[range] || {};
       }
     }
+    return {};
+  }
 
-    // Inicializar a página
-    document.addEventListener('DOMContentLoaded', function() {
-      calcularPericias();
-      atualizarCamposPosicao();
+  // Calcular todas as perícias - FUNÇÃO CORRIGIDA
+  function calcularPericias() {
+    const altura = parseFloat(document.getElementById('altura').value) || 1.75;
+    const peso = parseInt(document.getElementById('peso').value) || 70;
+    const perna = document.getElementById('perna').value;
+    const posicao = document.getElementById('posicao').value;
+    const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 10;
+    const folegoTotal = parseInt(document.getElementById('folego-total').value) || 10;
+
+    const bonusA = getBonus(altura, bonusAltura);
+    const bonusP = getBonus(peso, bonusPeso);
+
+    // Ajustar bônus de defesa para não goleiros
+    function ajustarDefesa(bonus) {
+      if (posicao !== 'goleiro') {
+        if (bonus.defesa && (altura >= 1.86 || peso >= 86)) {
+          bonus.defesa = Math.floor(bonus.defesa / 2);
+        }
+      }
+      return bonus;
+    }
+
+    const bonusAjustadoA = ajustarDefesa({...bonusA});
+    const bonusAjustadoP = ajustarDefesa({...bonusP});
+
+    // Atualizar barra de fôlego - CORRIGIDO
+    const porcentagemFolego = Math.min(100, (folegoAtual / folegoTotal) * 100);
+    document.getElementById('barra-folego').style.width = `${porcentagemFolego}%`;
+    
+    // Verificar se aplica penalidade de fôlego
+    let staminaPenalty = 1;
+    let staminaClass = '';
+    
+    if (folegoAtual <= 10 && folegoAtual > 0) {
+      staminaPenalty = 0.5;
+      staminaClass = 'low-stamina';
+    } else if (folegoAtual === 0) {
+      staminaPenalty = 0;
+      staminaClass = 'no-stamina';
+    }
+
+    document.querySelectorAll('.pericia-item').forEach(item => {
+      item.classList.remove('low-stamina', 'no-stamina');
+      if (staminaClass) {
+        item.classList.add(staminaClass);
+      }
+      
+      const periciaId = item.querySelector('.pericia-manual').dataset.pericia;
+      const card = item.closest('.card-atributo');
+      const atributoId = card.querySelector('.atributo-input').id;
+      const valorAtributo = parseInt(document.getElementById(atributoId).value) || 0;
+
+      // Cálculo base (metade do atributo arredondado para baixo)
+      let valor = Math.floor(valorAtributo / 2);
+
+      // Aplicar bônus de altura/peso
+      if (bonusAjustadoA[periciaId]) valor += bonusAjustadoA[periciaId];
+      if (bonusAjustadoP[periciaId]) valor += bonusAjustadoP[periciaId];
+
+      // Aplicar ambidestria - CORRIGIDO
+      if (perna === 'ambidestro') {
+        if (['passe','drible','dominio','roubo'].includes(periciaId)) {
+          valor += 5;
+        }
+        if ((periciaId === 'pontaria' && escolhaAmbidestro === 'pontaria') || 
+            (periciaId === 'chute' && escolhaAmbidestro === 'chute')) {
+          valor += 5;
+        }
+      }
+
+      // Aplicar pontos manuais
+      const pontosManuais = parseInt(item.querySelector('.pericia-manual').value) || 0;
+      let valorTotal = valor + pontosManuais;
+
+      // Aplicar penalidade de fôlego
+      if (staminaPenalty !== 1) {
+        valorTotal = Math.floor(valorTotal * staminaPenalty);
+      }
+
+      item.querySelector('.pericia-total').textContent = valorTotal;
     });
-  </script>
-</body>
-</html>
+
+    // Atualizar deslocamento
+    const velocidade = parseInt(document.getElementById('velocidade').value) || 0;
+    let deslocamentoBase = 10 + Math.floor(velocidade / 2);
+    let deslocamentoFinal = staminaPenalty === 0 ? 0 : Math.floor(deslocamentoBase * staminaPenalty);
+    document.getElementById('deslocamento').value = deslocamentoFinal;
+  }
+
+  // Mostrar/ocultar campo SG - CORRIGIDO
+  function atualizarCamposPosicao() {
+    const posicao = document.getElementById('posicao').value;
+    const sgContainer = document.getElementById('sg-container');
+    
+    if (['goleiro', 'zagueiro', 'lateral_direito', 'lateral_esquerdo'].includes(posicao)) {
+      sgContainer.style.display = 'block';
+    } else {
+      sgContainer.style.display = 'none';
+    }
+  }
+
+  // Inicialização
+  document.addEventListener('DOMContentLoaded', function() {
+    // ... (código existente)
+    
+    // Adicionar eventos aos campos relevantes
+    const campos = ['altura', 'peso', 'perna', 'folego-atual', 'folego-total', 'posicao'];
+    campos.forEach(id => {
+      document.getElementById(id).addEventListener('change', calcularPericias);
+    });
+    
+    // Event listeners para atributos e perícias
+    const atributos = ['potencia', 'tecnica', 'velocidade', 'agilidade', 'ego'];
+    atributos.forEach(attr => {
+      document.getElementById(attr).addEventListener('input', calcularPericias);
+    });
+    
+    document.querySelectorAll('.pericia-manual').forEach(input => {
+      input.addEventListener('input', calcularPericias);
+    });
+    
+    // Chamar as funções inicialmente
+    atualizarCamposPosicao();
+    calcularPericias();
+  });
+</script>
