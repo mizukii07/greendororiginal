@@ -29,14 +29,14 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      /* URL DO BACKGROUND - SUBSTITUA PELO SEU */
-      background: var(--azul-fundo) url('https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/NOME_DO_BACKGROUND.jpg') no-repeat center center fixed;
+      background: var(--azul-fundo) url('https://raw.githubusercontent.com/mizukii07/green-door-assets/refs/heads/main/0d0a9b1d-30f0-40af-b89a-07226436c397.jpg') no-repeat center center fixed;
       background-size: cover;
       color: var(--branco);
       min-height: 100vh;
       padding-top: 80px;
       position: relative;
       overflow-x: hidden;
+      transition: background-image 0.5s ease;
     }
 
     body::before {
@@ -77,6 +77,7 @@
     .logo {
       height: 60px;
       filter: drop-shadow(0 0 8px var(--verde-neon));
+      transition: all 0.3s ease;
     }
 
     .logo-text {
@@ -85,6 +86,7 @@
       letter-spacing: 2px;
       color: var(--verde-neon);
       text-shadow: 0 0 10px var(--sombra);
+      transition: all 0.3s ease;
     }
 
     nav ul {
@@ -753,14 +755,57 @@
         font-size: 2.8rem;
       }
     }
+
+    /* Estilo para o loader */
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 20, 40, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 8px solid rgba(78, 252, 151, 0.2);
+      border-top: 8px solid var(--verde-neon);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loader p {
+      color: var(--verde-neon);
+      font-size: 1.2rem;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      max-width: 300px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <!-- Loader inicial -->
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <p>Carregando o universo do Green Door RPG...</p>
+  </div>
+
   <!-- Cabeçalho Fixo -->
   <header>
     <div class="logo-container">
-      <!-- URL DA LOGO - SUBSTITUA PELO SEU -->
-      <img src="https://raw.githubusercontent.com/mizukii07/green-door-assets/refs/heads/main/33242792-c30e-49d9-98f5-ee66dc015dc4.jpg" alt="Green Door Logo" class="logo">
+      <img src="https://raw.githubusercontent.com/mizukii07/green-door-assets/refs/heads/main/33242792-c30e-49d9-98f5-ee66dc015dc4.jpg" alt="Green Door Logo" class="logo" id="header-logo">
       <div class="logo-text">GREEN DOOR RPG</div>
     </div>
     
@@ -1411,6 +1456,23 @@
     let isAdmin = false;
     let fichasUsuario = [];
     let fichaParaExcluir = null;
+
+    // Função para verificar se imagens carregaram
+    function verificarImagens() {
+      const loader = document.getElementById('loader');
+      const logo = document.getElementById('header-logo');
+      const bg = document.body.style.backgroundImage;
+      
+      // Se ambos carregaram, ocultar loader
+      if (logo.complete && bg) {
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 1000);
+      } else {
+        // Se não carregou, tentar novamente
+        setTimeout(verificarImagens, 500);
+      }
+    }
 
     // Atualizar barra de fôlego
     function atualizarBarraFolego() {
@@ -2077,6 +2139,9 @@
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
+      // Verificar se as imagens carregaram
+      verificarImagens();
+      
       // Inicializar Firebase Auth
       auth.onAuthStateChanged(user => {
         if (user) {
