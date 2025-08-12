@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GREEN DOOR RPG - Ficha Completa</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -17,6 +17,8 @@
       --sombra: rgba(0, 255, 100, 0.3);
       --destaque: #ffeb3b;
       --gradiente: linear-gradient(135deg, #0a2e1a 0%, #1e4530 50%, #0a2e1a 100%);
+      --azul-fundo: #0a0a2a;
+      --azul-destaque: #2a2a5a;
     }
 
     * {
@@ -27,83 +29,241 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      background: var(--gradiente);
+      background: var(--azul-fundo) url('https://i.imgur.com/0wQlK8s.png') no-repeat center center fixed;
+      background-size: cover;
       color: var(--branco);
-      display: flex;
       min-height: 100vh;
-      background-attachment: fixed;
+      padding-top: 80px;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* Menu Lateral */
-    .menu-lateral {
-      width: 250px;
-      background-color: var(--verde-escuro);
-      border-right: 2px solid var(--verde-neon);
-      padding: 20px;
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, transparent 0%, var(--azul-fundo) 90%);
+      z-index: -1;
+    }
+
+    /* Cabeçalho Fixo */
+    header {
       position: fixed;
-      height: 100vh;
-      z-index: 100;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(10, 10, 42, 0.95);
+      border-bottom: 2px solid var(--verde-neon);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 30px;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
     .logo {
-      text-align: center;
-      margin-bottom: 30px;
-      padding: 10px;
-      border-radius: 10px;
-      background: rgba(10,40,20,0.5);
+      height: 60px;
+      filter: drop-shadow(0 0 8px var(--verde-neon));
     }
 
-    .logo img {
-      max-width: 180px;
-      filter: drop-shadow(0 0 5px var(--verde-neon));
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: var(--verde-neon);
+      text-shadow: 0 0 10px var(--sombra);
     }
 
-    .menu-item {
-      padding: 12px 15px;
-      margin: 8px 0;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.3s;
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+
+    nav a {
+      color: var(--branco);
+      text-decoration: none;
       font-family: 'Orbitron', sans-serif;
+      font-weight: 500;
+      font-size: 1.1rem;
+      padding: 8px 15px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    nav a:hover {
+      color: var(--verde-neon);
+      background: rgba(78, 252, 151, 0.1);
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--verde-neon);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    nav a:hover::after {
+      width: 80%;
+    }
+
+    nav a.ativo {
+      color: var(--verde-neon);
+      background: rgba(78, 252, 151, 0.15);
+    }
+
+    nav a.ativo::after {
+      width: 80%;
+      background: var(--verde-neon);
+    }
+
+    .login-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
-    .menu-item:hover {
-      background-color: var(--verde-meio);
-      transform: translateX(5px);
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--verde-neon);
+      overflow: hidden;
+      background: var(--verde-escuro);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .menu-item.ativo {
-      background-color: var(--verde-claro);
-      color: var(--preto);
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-login {
+      background: var(--verde-neon);
+      color: var(--verde-escuro);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
       font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .menu-item i {
-      font-size: 1.2rem;
+    .btn-login:hover {
+      background: var(--branco);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(78, 252, 151, 0.4);
     }
 
     /* Conteúdo Principal */
     .conteudo {
-      margin-left: 250px;
-      flex: 1;
       padding: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Página Inicial */
+    .home-container {
+      text-align: center;
+      padding: 60px 20px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .home-container h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4.5rem;
+      letter-spacing: 4px;
+      color: var(--verde-neon);
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(78, 252, 151, 0.7);
+    }
+
+    .home-container p {
+      font-size: 1.4rem;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      color: #d0e0ff;
+    }
+
+    .home-stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 50px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: rgba(20, 30, 60, 0.7);
+      border: 2px solid var(--verde-neon);
+      border-radius: 15px;
+      padding: 25px;
+      width: 220px;
+      backdrop-filter: blur(5px);
+      transition: all 0.4s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      background: rgba(30, 40, 80, 0.8);
+    }
+
+    .stat-card i {
+      font-size: 3rem;
+      color: var(--verde-neon);
+      margin-bottom: 15px;
+    }
+
+    .stat-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--verde-neon);
+    }
+
+    .stat-card p {
+      font-size: 1.1rem;
+      margin: 0;
     }
 
     /* Ficha Container */
     .ficha-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: rgba(10, 40, 20, 0.8);
+      background: rgba(10, 20, 40, 0.9);
       border-radius: 15px;
       padding: 30px;
       box-shadow: 0 0 40px var(--sombra);
       border: 2px solid var(--verde-neon);
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(5px);
+      animation: slideUp 0.6s ease-out;
     }
 
     .ficha-container::before {
@@ -147,7 +307,7 @@
       width: 180px;
       height: 180px;
       border-radius: 10px;
-      background: rgba(30, 70, 40, 0.5);
+      background: rgba(30, 40, 80, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -177,10 +337,10 @@
 
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      background: rgba(30, 70, 40, 0.5);
+      padding: 12px 15px;
+      background: rgba(30, 40, 80, 0.5);
       border: 1px solid var(--verde-neon);
-      border-radius: 6px;
+      border-radius: 8px;
       color: var(--branco);
       font-size: 1rem;
       transition: all 0.3s;
@@ -189,7 +349,8 @@
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--destaque);
-      box-shadow: 0 0 10px var(--destaque);
+      box-shadow: 0 0 12px var(--destaque);
+      background: rgba(40, 50, 90, 0.7);
     }
 
     /* Estatísticas */
@@ -205,7 +366,7 @@
       min-width: 140px;
       text-align: center;
       padding: 15px;
-      background: rgba(20, 50, 30, 0.6);
+      background: rgba(20, 30, 60, 0.6);
       border-radius: 10px;
       border-left: 4px solid var(--verde-neon);
       transition: all 0.3s;
@@ -213,7 +374,7 @@
 
     .estatistica-item:hover {
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     }
 
     .estatistica-valor {
@@ -226,7 +387,7 @@
     /* Fôlego */
     .folego-container {
       margin-top: 20px;
-      background: rgba(20, 50, 30, 0.6);
+      background: rgba(20, 30, 60, 0.6);
       padding: 15px;
       border-radius: 10px;
       border-left: 4px solid var(--verde-neon);
@@ -238,7 +399,7 @@
       border-radius: 8px;
       margin-top: 10px;
       overflow: hidden;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     }
 
     .barra-folego-inner {
@@ -266,17 +427,19 @@
     }
 
     .card-atributo {
-      background: rgba(20, 50, 30, 0.6);
+      background: rgba(20, 30, 60, 0.6);
       border-radius: 12px;
       padding: 20px;
       border-left: 5px solid var(--verde-neon);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       transition: all 0.3s;
+      backdrop-filter: blur(3px);
     }
 
     .card-atributo:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      background: rgba(30, 40, 80, 0.7);
     }
 
     .card-atributo h3 {
@@ -293,6 +456,10 @@
       font-size: 1.3rem;
       text-align: center;
       padding: 8px;
+      background: rgba(30, 40, 80, 0.7);
+      border: 1px solid var(--verde-neon);
+      border-radius: 6px;
+      color: var(--branco);
     }
 
     .pericia-item {
@@ -301,13 +468,13 @@
       gap: 10px;
       margin: 12px 0;
       padding: 8px;
-      background: rgba(30, 60, 40, 0.3);
+      background: rgba(30, 40, 80, 0.3);
       border-radius: 6px;
       transition: all 0.3s;
     }
 
     .pericia-item:hover {
-      background: rgba(40, 80, 50, 0.4);
+      background: rgba(40, 50, 100, 0.4);
       transform: translateX(5px);
     }
 
@@ -321,6 +488,10 @@
       text-align: center;
       padding: 5px;
       font-size: 1.1rem;
+      background: rgba(30, 40, 80, 0.7);
+      border: 1px solid var(--verde-neon);
+      border-radius: 4px;
+      color: var(--branco);
     }
 
     .pericia-total {
@@ -352,12 +523,32 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      font-family: 'Orbitron', sans-serif;
+      position: relative;
+      overflow: hidden;
     }
 
     .btn:hover {
       background: var(--branco);
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(78, 252, 151, 0.5);
+    }
+
+    .btn:hover::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 1.5s infinite;
     }
 
     .btn i {
@@ -367,6 +558,15 @@
     .btn-login {
       background: #4285F4;
       color: white;
+    }
+
+    .btn-delete {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #c0392b;
     }
 
     /* Seções EM BREVE */
@@ -387,7 +587,7 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
+      z-index: 2000;
       justify-content: center;
       align-items: center;
     }
@@ -402,6 +602,7 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: 0 0 40px var(--sombra);
+      animation: popIn 0.4s ease-out;
     }
 
     .modal-botoes {
@@ -424,16 +625,19 @@
       align-items: center;
       gap: 20px;
       padding: 15px;
-      background: rgba(30, 60, 40, 0.5);
+      background: rgba(30, 40, 80, 0.5);
       border-radius: 10px;
       margin-bottom: 15px;
       cursor: pointer;
       transition: all 0.3s;
+      border: 1px solid rgba(78, 252, 151, 0.3);
+      animation: fadeIn 0.5s ease-out;
     }
 
     .ficha-item:hover {
-      background: rgba(40, 80, 50, 0.7);
+      background: rgba(40, 50, 100, 0.7);
       transform: translateX(10px);
+      border-color: var(--verde-neon);
     }
 
     .ficha-avatar {
@@ -473,26 +677,63 @@
       text-decoration: line-through;
     }
 
+    /* Animações */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      70% { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes shine {
+      0% { left: -50%; }
+      100% { left: 150%; }
+    }
+
     /* Responsividade */
     @media (max-width: 992px) {
-      .menu-lateral {
-        width: 200px;
+      header {
+        padding: 0 15px;
       }
       
-      .conteudo {
-        margin-left: 200px;
+      nav ul {
+        gap: 12px;
+      }
+      
+      nav a {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+      
+      .home-container h1 {
+        font-size: 3.5rem;
       }
     }
 
     @media (max-width: 768px) {
-      .menu-lateral {
-        width: 100%;
-        position: relative;
+      header {
+        flex-direction: column;
         height: auto;
+        padding: 10px;
       }
       
-      .conteudo {
-        margin-left: 0;
+      .logo-container {
+        margin-bottom: 10px;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 10px;
       }
       
       .info-jogador {
@@ -502,63 +743,89 @@
       .avatar {
         margin: 0 auto;
       }
-    }
-
-    /* Animação de entrada */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .ficha-container, .ficha-item {
-      animation: fadeIn 0.5s ease-out;
+      
+      .home-container {
+        padding: 30px 15px;
+      }
+      
+      .home-container h1 {
+        font-size: 2.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Menu Lateral -->
-  <div class="menu-lateral">
-    <div class="logo">
-      <img src="https://media.discordapp.net/attachments/1402279926987493437/1402435120287187066/31_Sem_Titulo2_20250719171917.png" alt="Green Door Logo">
+  <!-- Cabeçalho Fixo -->
+  <header>
+    <div class="logo-container">
+      <img src="https://media.discordapp.net/attachments/1402279926987493437/1402435120287187066/31_Sem_Titulo2_20250719171917.png" alt="Green Door Logo" class="logo">
+      <div class="logo-text">GREEN DOOR RPG</div>
     </div>
     
-    <div class="menu-item ativo" onclick="mostrarSecao('ficha')">
-      <i class="fas fa-scroll"></i> Minha Ficha
-    </div>
-    <div class="menu-item" onclick="mostrarSecao('ranking')">
-      <i class="fas fa-trophy"></i> Rankings
-    </div>
-    <div class="menu-item" onclick="mostrarSecao('leilao')">
-      <i class="fas fa-gavel"></i> Leilão
-    </div>
-    <div class="menu-item" onclick="mostrarSecao('mestre')">
-      <i class="fas fa-crown"></i> Painel do Mestre
-    </div>
-    <div class="menu-item" id="menu-login" onclick="login()">
-      <i class="fas fa-sign-in-alt"></i> Entrar
-    </div>
-  </div>
-
-  <!-- Modal de Login -->
-  <div id="modal-login" class="modal">
-    <div class="modal-conteudo">
-      <h3>ENTRAR NO GREEN DOOR</h3>
-      <p>Faça login para salvar sua ficha e acessar todos os recursos</p>
-      <div class="modal-botoes">
-        <button class="btn btn-login" onclick="fazerLoginGoogle()">
-          <i class="fab fa-google"></i> Entrar com Google
-        </button>
-        <button class="btn" onclick="fecharLogin()">
-          <i class="fas fa-times"></i> Cancelar
-        </button>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="mostrarSecao('home')" class="ativo">Home</a></li>
+        <li><a href="#" onclick="mostrarSecao('ficha')">Ficha</a></li>
+        <li><a href="#" onclick="mostrarSecao('ranking')">Rankings</a></li>
+        <li><a href="#" onclick="mostrarSecao('leilao')">Leilão</a></li>
+        <li><a href="#" onclick="mostrarSecao('mestre')">Painel do Mestre</a></li>
+      </ul>
+    </nav>
+    
+    <div class="login-area">
+      <div class="user-avatar" id="user-avatar" style="display: none;">
+        <i class="fas fa-user"></i>
       </div>
+      <button class="btn-login" id="menu-login" onclick="login()">
+        <i class="fas fa-sign-in-alt"></i> Entrar
+      </button>
     </div>
-  </div>
+  </header>
 
   <!-- Conteúdo Principal -->
   <div class="conteudo">
+    <!-- Página Inicial -->
+    <div id="secao-home">
+      <div class="home-container">
+        <h1>GREEN DOOR RPG</h1>
+        <p>Bem-vindo ao universo competitivo do Green Door RPG, onde você cria e desenvolve seu próprio jogador de futebol em um mundo inspirado em Blue Lock. Domine o campo, desenvolva suas habilidades e torne-se o melhor atacante do mundo!</p>
+        
+        <div class="btn-container" style="justify-content: center;">
+          <button class="btn" onclick="mostrarSecao('ficha')">
+            <i class="fas fa-scroll"></i> CRIAR SUA FICHA
+          </button>
+          <button class="btn" onclick="mostrarSecao('ranking')">
+            <i class="fas fa-trophy"></i> VER RANKINGS
+          </button>
+        </div>
+        
+        <div class="home-stats">
+          <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <h3>450+</h3>
+            <p>Jogadores Ativos</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-futbol"></i>
+            <h3>12,500</h3>
+            <p>Gols Marcados</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-trophy"></i>
+            <h3>18</h3>
+            <p>Times Competindo</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-flag"></i>
+            <h3>7</h3>
+            <p>Campeonatos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Seção da Ficha -->
-    <div id="secao-ficha">
+    <div id="secao-ficha" style="display: none;">
       <div class="ficha-container">
         <!-- Seletor de Fichas -->
         <div id="seletor-fichas" style="margin-bottom: 20px; display: none;">
@@ -918,6 +1185,9 @@
           <button class="btn" onclick="salvarFicha()">
             <i class="fas fa-save"></i> SALVAR FICHA
           </button>
+          <button class="btn btn-delete" onclick="excluirFicha()" id="btn-excluir" style="display: none;">
+            <i class="fas fa-trash"></i> EXCLUIR FICHA
+          </button>
         </div>
       </div>
     </div>
@@ -956,6 +1226,22 @@
     </div>
   </div>
 
+  <!-- Modal de Login -->
+  <div id="modal-login" class="modal">
+    <div class="modal-conteudo">
+      <h3>ENTRAR NO GREEN DOOR</h3>
+      <p>Faça login para salvar sua ficha e acessar todos os recursos</p>
+      <div class="modal-botoes">
+        <button class="btn btn-login" onclick="fazerLoginGoogle()">
+          <i class="fab fa-google"></i> Entrar com Google
+        </button>
+        <button class="btn" onclick="fecharLogin()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal para escolha de ambidestro -->
   <div id="modal-ambidestro" class="modal">
     <div class="modal-conteudo">
@@ -981,6 +1267,22 @@
       </button>
       <div id="modal-ficha-conteudo" class="modal-ficha">
         <!-- Conteúdo da ficha será carregado aqui -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação de exclusão -->
+  <div id="modal-excluir" class="modal">
+    <div class="modal-conteudo">
+      <h3><i class="fas fa-exclamation-triangle"></i> CONFIRMAR EXCLUSÃO</h3>
+      <p id="excluir-mensagem">Tem certeza que deseja excluir esta ficha permanentemente?</p>
+      <div class="modal-botoes">
+        <button class="btn btn-delete" onclick="confirmarExclusao()">
+          <i class="fas fa-trash"></i> Sim, Excluir
+        </button>
+        <button class="btn" onclick="fecharExclusao()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
       </div>
     </div>
   </div>
@@ -1106,6 +1408,7 @@
     let fichaId = '';
     let isAdmin = false;
     let fichasUsuario = [];
+    let fichaParaExcluir = null;
 
     // Atualizar barra de fôlego
     function atualizarBarraFolego() {
@@ -1289,14 +1592,21 @@
       document.getElementById(`secao-${secao}`).style.display = 'block';
       
       // Atualizar menu ativo
-      document.querySelectorAll('.menu-item').forEach(item => {
+      document.querySelectorAll('nav a').forEach(item => {
         item.classList.remove('ativo');
       });
-      document.querySelector(`.menu-item[onclick="mostrarSecao('${secao}')"]`).classList.add('ativo');
+      document.querySelector(`nav a[onclick="mostrarSecao('${secao}')"]`).classList.add('ativo');
       
       // Carregar fichas se for o painel do mestre
       if (secao === 'mestre') {
         verificarAdmin();
+      }
+      
+      // Mostrar botão de exclusão se houver ficha carregada
+      if (secao === 'ficha' && fichaId) {
+        document.getElementById('btn-excluir').style.display = 'block';
+      } else {
+        document.getElementById('btn-excluir').style.display = 'none';
       }
     }
 
@@ -1386,9 +1696,11 @@
       try {
         if (fichaId) {
           await db.collection('fichas').doc(fichaId).update(ficha);
+          document.getElementById('btn-excluir').style.display = 'block';
         } else {
           const docRef = await db.collection('fichas').add(ficha);
           fichaId = docRef.id;
+          document.getElementById('btn-excluir').style.display = 'block';
         }
         alert('Ficha salva com sucesso!');
         carregarFichasDoUsuario(); // Atualizar lista de fichas
@@ -1441,6 +1753,7 @@
       });
       
       fichaId = ''; // Nova ficha
+      document.getElementById('btn-excluir').style.display = 'none';
       
       // Atualizar cálculos
       atualizarBarraFolego();
@@ -1460,6 +1773,7 @@
           const ficha = doc.data();
           preencherFormulario(ficha);
           fichaId = id;
+          document.getElementById('btn-excluir').style.display = 'block';
         }
       } catch (error) {
         console.error('Erro ao carregar ficha:', error);
@@ -1593,8 +1907,11 @@
               <p><i class="fas fa-futbol"></i> ${ficha.gols || 0} Gols | 
                  <i class="fas fa-shoe-prints"></i> ${ficha.assistencias || 0} Assistências</p>
             </div>
-            <button class="btn" onclick="editarFicha('${doc.id}')" style="margin-left: auto;">
+            <button class="btn" onclick="editarFicha('${doc.id}')">
               <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn btn-delete" onclick="excluirFichaAdmin('${doc.id}')" style="margin-left: 10px;">
+              <i class="fas fa-trash"></i>
             </button>
           `;
           listaFichas.appendChild(fichaEl);
@@ -1626,6 +1943,59 @@
       });
     }
 
+    // Função para excluir ficha (usuário)
+    function excluirFicha() {
+      if (!fichaId) return;
+      
+      const fichaNome = document.getElementById('nome').value || 'esta ficha';
+      document.getElementById('excluir-mensagem').textContent = `Tem certeza que deseja excluir permanentemente "${fichaNome}"?`;
+      document.getElementById('modal-excluir').style.display = 'flex';
+    }
+
+    // Função para excluir ficha (admin)
+    function excluirFichaAdmin(id) {
+      fichaParaExcluir = id;
+      document.getElementById('excluir-mensagem').textContent = `Tem certeza que deseja excluir esta ficha permanentemente?`;
+      document.getElementById('modal-excluir').style.display = 'flex';
+    }
+
+    // Confirmar exclusão de ficha
+    async function confirmarExclusao() {
+      const id = fichaParaExcluir || fichaId;
+      
+      if (!id) {
+        fecharExclusao();
+        return;
+      }
+      
+      try {
+        await db.collection('fichas').doc(id).delete();
+        
+        if (fichaParaExcluir) {
+          // Atualizar lista de fichas no painel do mestre
+          carregarFichasParaMestre();
+          alert('Ficha excluída com sucesso!');
+        } else {
+          // Limpar formulário e recarregar fichas
+          criarNovaFicha();
+          carregarFichasDoUsuario();
+          alert('Sua ficha foi excluída com sucesso!');
+        }
+      } catch (error) {
+        console.error('Erro ao excluir ficha:', error);
+        alert('Erro ao excluir ficha: ' + error.message);
+      }
+      
+      fecharExclusao();
+      fichaParaExcluir = null;
+    }
+
+    // Fechar modal de exclusão
+    function fecharExclusao() {
+      document.getElementById('modal-excluir').style.display = 'none';
+      fichaParaExcluir = null;
+    }
+
     // Fechar modal de ficha
     function fecharModalFicha() {
       document.getElementById('modal-ficha').style.display = 'none';
@@ -1643,7 +2013,18 @@
     async function fazerLoginGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
-        await auth.signInWithPopup(provider);
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+        
+        // Atualizar avatar do usuário
+        const userAvatar = document.getElementById('user-avatar');
+        if (user.photoURL) {
+          userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}">`;
+        } else {
+          userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+        }
+        userAvatar.style.display = 'flex';
+        
         fecharLogin();
       } catch (error) {
         alert('Erro no login com Google: ' + error.message);
@@ -1663,10 +2044,20 @@
     // Atualizar menu de login/logout conforme o estado
     auth.onAuthStateChanged(user => {
       const menuLogin = document.getElementById('menu-login');
+      const userAvatar = document.getElementById('user-avatar');
+      
       if (user) {
         menuLogin.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
         menuLogin.onclick = logout;
-        menuLogin.style.background = '#d9534f';
+        
+        // Atualizar avatar do usuário
+        if (user.photoURL) {
+          userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}">`;
+        } else {
+          userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+        }
+        userAvatar.style.display = 'flex';
+        
         carregarFichasDoUsuario(); // Carregar fichas do usuário
         
         // Verificar se é admin
@@ -1676,8 +2067,9 @@
       } else {
         menuLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
         menuLogin.onclick = login;
-        menuLogin.style.background = '';
+        userAvatar.style.display = 'none';
         document.getElementById('seletor-fichas').style.display = 'none';
+        document.getElementById('btn-excluir').style.display = 'none';
       }
     });
 
