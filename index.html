@@ -1457,20 +1457,52 @@
     let fichasUsuario = [];
     let fichaParaExcluir = null;
 
-    // Função para verificar se imagens carregaram
+    // Correção da função verificarImagens
     function verificarImagens() {
       const loader = document.getElementById('loader');
       const logo = document.getElementById('header-logo');
-      const bg = document.body.style.backgroundImage;
       
-      // Se ambos carregaram, ocultar loader
-      if (logo.complete && bg) {
+      // Se não encontrou o logo, ocultar loader e retornar
+      if (!logo) {
+        loader.style.display = 'none';
+        return;
+      }
+      
+      // Timeout de fallback (máximo 3 segundos)
+      const fallbackTimeout = setTimeout(() => {
+        loader.style.display = 'none';
+        if (logo) logo.removeEventListener('load', onLogoLoad);
+        if (logo) logo.removeEventListener('error', onLogoError);
+      }, 3000);
+
+      function onLogoLoad() {
+        clearTimeout(fallbackTimeout);
         setTimeout(() => {
           loader.style.display = 'none';
+          if (logo) logo.removeEventListener('load', onLogoLoad);
+          if (logo) logo.removeEventListener('error', onLogoError);
         }, 1000);
+      }
+
+      function onLogoError() {
+        clearTimeout(fallbackTimeout);
+        setTimeout(() => {
+          loader.style.display = 'none';
+          if (logo) logo.removeEventListener('load', onLogoLoad);
+          if (logo) logo.removeEventListener('error', onLogoError);
+        }, 1000);
+      }
+
+      // Se a logo já estiver carregada ou tiver dado erro
+      if (logo.complete) {
+        if (logo.naturalHeight !== 0) {
+          onLogoLoad();
+        } else {
+          onLogoError();
+        }
       } else {
-        // Se não carregou, tentar novamente
-        setTimeout(verificarImagens, 500);
+        logo.addEventListener('load', onLogoLoad);
+        logo.addEventListener('error', onLogoError);
       }
     }
 
@@ -2139,6 +2171,11 @@
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar loader com timeout de segurança
+      setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+      }, 3000);
+      
       // Verificar se as imagens carregaram
       verificarImagens();
       
