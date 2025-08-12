@@ -29,9 +29,9 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      /* Background corrigido com overlay gradiente */
+      /* Background corrigido */
       background: 
-        linear-gradient(rgba(10, 20, 40, 0.9), 
+        radial-gradient(circle at center, rgba(10, 10, 42, 0.85) 0%, rgba(10, 10, 42, 0.95) 100%),
         url('https://raw.githubusercontent.com/mizukii07/green-door-assets/refs/heads/main/0d0a9b1d-30f0-40af-b89a-07226436c397.jpg') no-repeat center center fixed;
       background-size: cover;
       color: var(--branco);
@@ -42,8 +42,6 @@
       transition: background-image 0.5s ease;
     }
 
-    /* Removido o pseudo-elemento que cobria o background */
-    
     /* Cabeçalho Fixo */
     header {
       position: fixed;
@@ -298,6 +296,10 @@
     .dados-jogador {
       flex: 1;
       min-width: 250px;
+      background: rgba(20, 30, 60, 0.6);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 3px solid var(--verde-neon);
     }
 
     .avatar {
@@ -868,15 +870,6 @@
     <!-- Seção da Ficha -->
     <div id="secao-ficha" style="display: none;">
       <div class="ficha-container">
-        <!-- Seletor de Fichas -->
-        <div id="seletor-fichas" style="margin-bottom: 20px; display: none;">
-          <label for="fichas-usuario"><i class="fas fa-scroll"></i> Selecione sua ficha:</label>
-          <select id="fichas-usuario" onchange="carregarFichaSelecionada()"></select>
-          <button class="btn" onclick="criarNovaFicha()" style="margin-left: 10px;">
-            <i class="fas fa-plus"></i> Nova Ficha
-          </button>
-        </div>
-        
         <h1><i class="fas fa-scroll"></i> FICHA DO JOGADOR</h1>
         
         <!-- Informações Básicas -->
@@ -1225,9 +1218,6 @@
           <button class="btn" onclick="salvarFicha()">
             <i class="fas fa-save"></i> SALVAR FICHA
           </button>
-          <button class="btn btn-delete" onclick="excluirFicha()" id="btn-excluir" style="display: none;">
-            <i class="fas fa-trash"></i> EXCLUIR FICHA
-          </button>
         </div>
       </div>
     </div>
@@ -1256,11 +1246,8 @@
     <div id="secao-mestre" style="display: none;">
       <div class="ficha-container">
         <h1><i class="fas fa-crown"></i> PAINEL DO MESTRE</h1>
-        <div id="admin-message" style="color: #ff6b6b; margin-bottom: 20px; display: none;">
+        <div id="admin-message" style="color: #ff6b6b; margin-bottom: 20px;">
           <i class="fas fa-exclamation-circle"></i> Acesso restrito a administradores
-        </div>
-        <div id="lista-fichas" style="margin-top: 20px;">
-          <!-- As fichas serão carregadas aqui -->
         </div>
       </div>
     </div>
@@ -1272,7 +1259,7 @@
       <h3>ENTRAR NO GREEN DOOR</h3>
       <p>Faça login para salvar sua ficha e acessar todos os recursos</p>
       <div class="modal-botoes">
-        <button class="btn btn-login" onclick="fazerLoginGoogle()">
+        <button class="btn btn-login">
           <i class="fab fa-google"></i> Entrar com Google
         </button>
         <button class="btn" onclick="fecharLogin()">
@@ -1288,40 +1275,11 @@
       <h3><i class="fas fa-ambulance"></i> ESCOLHA DE AMBIDESTRO</h3>
       <p>Você selecionou Ambidestro. Escolha onde aplicar seu bônus adicional:</p>
       <div class="modal-botoes">
-        <button class="btn" onclick="escolherAmbidestro('pontaria')">
+        <button class="btn">
           <i class="fas fa-bullseye"></i> +5 Pontaria
         </button>
-        <button class="btn" onclick="escolherAmbidestro('chute')">
+        <button class="btn">
           <i class="fas fa-futbol"></i> +5 Chute
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para visualizar ficha -->
-  <div id="modal-ficha" class="modal">
-    <div class="modal-conteudo">
-      <h3 id="modal-ficha-titulo">FICHA DO JOGADOR</h3>
-      <button class="btn" onclick="fecharModalFicha()" style="position: absolute; top: 15px; right: 15px;">
-        <i class="fas fa-times"></i>
-      </button>
-      <div id="modal-ficha-conteudo" class="modal-ficha">
-        <!-- Conteúdo da ficha será carregado aqui -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de confirmação de exclusão -->
-  <div id="modal-excluir" class="modal">
-    <div class="modal-conteudo">
-      <h3><i class="fas fa-exclamation-triangle"></i> CONFIRMAR EXCLUSÃO</h3>
-      <p id="excluir-mensagem">Tem certeza que deseja excluir esta ficha permanentemente?</p>
-      <div class="modal-botoes">
-        <button class="btn btn-delete" onclick="confirmarExclusao()">
-          <i class="fas fa-trash"></i> Sim, Excluir
-        </button>
-        <button class="btn" onclick="fecharExclusao()">
-          <i class="fas fa-times"></i> Cancelar
         </button>
       </div>
     </div>
@@ -1498,6 +1456,22 @@
         item.classList.remove('ativo');
       });
       document.querySelector(`nav a[onclick="mostrarSecao('${secao}')"]`).classList.add('ativo');
+    }
+
+    function abrirLogin() {
+      document.getElementById('modal-login').style.display = 'flex';
+    }
+
+    function fecharLogin() {
+      document.getElementById('modal-login').style.display = 'none';
+    }
+
+    function login() {
+      abrirLogin();
+    }
+
+    function salvarFicha() {
+      alert('Ficha salva com sucesso!');
     }
 
     // Inicialização
