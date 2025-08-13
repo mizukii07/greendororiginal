@@ -1932,47 +1932,57 @@
     }
 
     // Carregar fichas do usuário para o seletor
-    async function carregarFichasDoUsuario() {
-      const user = auth.currentUser;
-      if (!user) return;
+async function carregarFichasDoUsuario() {
+  const user = auth.currentUser;
+  if (!user) return;
+  
+  try {
+    const snapshot = await db.collection('fichas')
+      .where('userId', '==', user.uid)
+      .get();
       
-      try {
-        const snapshot = await db.collection('fichas')
-          .where('userId', '==', user.uid)
-          .get();
-          
-        const seletor = document.getElementById('fichas-usuario');
-        seletor.innerHTML = '';
-        
-        if (snapshot.empty) {
-          document.getElementById('seletor-fichas').style.display = 'none';
-          return;
-        }
-        
-        document.getElementById('seletor-fichas').style.display = 'block';
-        fichasUsuario = [];
-        
-        snapshot.forEach(doc => {
-          const ficha = doc.data();
-          fichasUsuario.push({
-            id: doc.id,
-            ...ficha
-          });
-          
-          const option = document.createElement('option');
-          option.value = doc.id;
-          option.textContent = ficha.nickname || `Ficha ${seletor.options.length + 1}`;
-          seletor.appendChild(option);
-        });
-        
-        // Se já tivermos uma fichaId selecionada, colocamos como selecionada
-        if (fichaId) {
-          seletor.value = fichaId;
-        }
-      } catch (error) {
-        console.error('Erro ao carregar fichas:', error);
-      }
+    const seletor = document.getElementById('fichas-usuario');
+    seletor.innerHTML = '';
+    
+    if (snapshot.empty) {
+      document.getElementById('seletor-fichas').style.display = 'none';
+      fichasUsuario = [];
+      return;
     }
+    
+    document.getElementById('seletor-fichas').style.display = 'block';
+    fichasUsuario = [];
+    
+    snapshot.forEach(doc => {
+      const ficha = doc.data();
+      fichasUsuario.push({
+        id: doc.id,
+        ...ficha
+      });
+      
+      const option = document.createElement('option');
+      option.value = doc.id;
+      option.textContent = ficha.nickname || `Ficha ${seletor.options.length + 1}`;
+      seletor.appendChild(option);
+    });
+    
+    // Se já tivermos um fichaId (por exemplo acabamos de salvar), seleciona ela
+    if (fichaId) {
+      seletor.value = fichaId;
+      carregarFichaSelecionada();
+      return;
+    }
+    
+    // Caso o usuário ainda não tenha fichaId carregada, auto-carrega a última ficha (mais recente)
+    if (seletor.options.length > 0) {
+      // selecionar a última opção adicionada (geralmente a mais recente)
+      seletor.value = seletor.options[seletor.options.length - 1].value;
+      carregarFichaSelecionada();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar fichas:', error);
+  }
+}
 
     // Carregar fichas para o painel do mestre
     async function carregarFichasParaMestre() {
