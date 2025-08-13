@@ -1719,6 +1719,7 @@
       if (secao === 'mestre') {
         verificarAdmin();
       }
+      if (secao === 'ranking') carregarRanking();
       
       // Mostrar botão de exclusão se houver ficha carregada
       if (secao === 'ficha' && fichaId) {
@@ -2035,7 +2036,7 @@ async function carregarFichasDoUsuario() {
               <p><i class="fas fa-futbol"></i> ${ficha.gols || 0} Gols | 
                  <i class="fas fa-shoe-prints"></i> ${ficha.assistencias || 0} Assistências</p>
             </div>
-            <button class="btn" onclick="editarFicha('${doc.id}')">
+            <button class="btn" onclick=\"abrirEdicaoNoMestre('${doc.id}')\">
               <i class="fas fa-edit"></i> Editar
             </button>
             <button class="btn btn-delete" onclick="excluirFichaAdmin('${doc.id}')" style="margin-left: 10px;">
@@ -2130,6 +2131,468 @@ async function carregarFichasDoUsuario() {
     }
 
     // Funções de login
+// ===== Helpers: loader and cache =====
+function mostrarLoader(mensagem='Carregando...') {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    loader.querySelector('p').textContent = mensagem;
+    loader.style.display = 'flex';
+  }
+}
+function esconderLoader() {
+  const loader = document.getElementById('loader');
+  if (loader) loader.style.display = 'none';
+}
+
+// Simple localStorage cache helper (expires em minutos)
+function cacheSet(key, data, minutes=5) {
+  try {
+    const payload = { ts: Date.now(), minutes: minutes, data: data };
+    localStorage.setItem(key, JSON.stringify(payload));
+  } catch(e){ console.warn('cacheSet failed', e); }
+}
+function cacheGet(key) {
+  try {
+    const v = localStorage.getItem(key);
+    if (!v) return null;
+    const payload = JSON.parse(v);
+    if (Date.now() - payload.ts > payload.minutes * 60 * 1000) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return payload.data;
+  } catch(e){ return null; }
+}
+
+// ===== Admin edit in modal (doesn't clobber admin's fichaId) =====
+async function abrirEdicaoNoMestre(id) {
+  mostrarLoader('Abrindo ficha para edição...');
+  try {
+    const doc = await db.collection('fichas').doc(id).get();
+    if (!doc.exists) {
+      alert('Ficha não encontrada.');
+      esconderLoader();
+      return;
+    }
+    const ficha = doc.data();
+    preencherModalEdicao(ficha, id);
+    document.getElementById('modal-ficha-titulo').textContent = 'EDITAR FICHA (MESTRE)';
+    document.getElementById('modal-ficha').style.display = 'flex';
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao abrir ficha: ' + err.message);
+  } finally {
+    esconderLoader();
+  }
+}
+
+function preencherModalEdicao(ficha, id) {
+  const container = document.getElementById('modal-ficha-conteudo');
+  // Build a compact form inside modal for editing a few key fields (nome, nickname, gols, assistencias, classe)
+  container.innerHTML = `
+    <div style="display:flex; gap:12px; flex-direction:column;">
+      <label>Nome</label><input id="modal_nome" value="${escapeHtml(ficha.nome||'')}" />
+      <label>Apelido</label><input id="modal_nickname" value="${escapeHtml(ficha.nickname||'')}" />
+      <label>Classe</label><input id="modal_classe" value="${escapeHtml(ficha.classe||'')}" />
+      <label>Gols</label><input id="modal_gols" type="number" value="${ficha.gols||0}" />
+      <label>Assistências</label><input id="modal_assist" type="number" value="${ficha.assistencias||0}" />
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="btn" onclick="salvarEdicaoMestre('${id}')"><i class="fas fa-save"></i> Salvar</button>
+        <button class="btn" onclick="fecharModalFicha()"><i class="fas fa-times"></i> Fechar</button>
+      </div>
+    </div>
+  `;
+}
+
+// Escape helper to avoid breaking HTML when injecting strings
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+}
+
+async function salvarEdicaoMestre(id) {
+  mostrarLoader('Salvando edição...');
+  try {
+    const nome = document.getElementById('modal_nome').value;
+    const nickname = document.getElementById('modal_nickname').value;
+    const classe = document.getElementById('modal_classe').value;
+    const gols = parseInt(document.getElementById('modal_gols').value) || 0;
+    const assist = parseInt(document.getElementById('modal_assist').value) || 0;
+    await db.collection('fichas').doc(id).set({
+      nome: nome,
+      nickname: nickname,
+      classe: classe,
+      gols: gols,
+      assistencias: assist
+    }, { merge: true });
+    // refresh master list and ranking cache
+    cacheSet('fichas_cache_all', null, 0); // invalidate
+    carregarFichasParaMestre();
+    carregarRanking(); // in case ranking uses updated info
+    alert('Edição salva com sucesso!');
+    fecharModalFicha();
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao salvar: ' + err.message);
+  } finally {
+    esconderLoader();
+  }
+}
+
+// ===== Faster load: caching fichas per user and for master list =====
+async function carregarFichasDoUsuario() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const cacheKey = 'fichas_cache_user_' + user.uid;
+  const seletor = document.getElementById('fichas-usuario');
+  const seletorWrapper = document.getElementById('seletor-fichas');
+  // Try load from cache first
+  const cached = cacheGet(cacheKey);
+  if (cached && Array.isArray(cached)) {
+    preencherSeletorFichas(cached);
+    // Continue to refresh from server in background
+    db.collection('fichas').where('userId','==',user.uid).get().then(snapshot => {
+      const arr = [];
+      snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+      cacheSet(cacheKey, arr, 5);
+      preencherSeletorFichas(arr);
+    }).catch(err => console.warn('refresh fichas user failed', err));
+    return;
+  }
+  // no cache: fetch and cache
+  try {
+    const snapshot = await db.collection('fichas').where('userId','==',user.uid).get();
+    const arr = [];
+    snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+    cacheSet(cacheKey, arr, 5);
+    preencherSeletorFichas(arr);
+  } catch(err) {
+    console.error('Erro ao carregar fichas:', err);
+  }
+}
+
+function preencherSeletorFichas(arr) {
+  const seletor = document.getElementById('fichas-usuario');
+  const seletorWrapper = document.getElementById('seletor-fichas');
+  if (!seletor) return;
+  seletor.innerHTML = '';
+  if (!arr || arr.length === 0) {
+    if (seletorWrapper) seletorWrapper.style.display = 'none';
+    fichasUsuario = [];
+    return;
+  }
+  if (seletorWrapper) seletorWrapper.style.display = 'block';
+  fichasUsuario = arr.slice();
+  arr.forEach((f, idx) => {
+    const option = document.createElement('option');
+    option.value = f.id;
+    option.textContent = f.nickname || `Ficha ${idx+1}`;
+    seletor.appendChild(option);
+  });
+  // auto-select last or existing fichaId
+  if (typeof fichaId !== 'undefined' && fichaId) {
+    seletor.value = fichaId;
+    carregarFichaSelecionada();
+    return;
+  }
+  if (seletor.options.length > 0) {
+    seletor.value = seletor.options[seletor.options.length - 1].value;
+    carregarFichaSelecionada();
+  }
+}
+
+// Carregar fichas para o painel do mestre com cache
+async function carregarFichasParaMestre() {
+  const cacheKeyAll = 'fichas_cache_all';
+  const cached = cacheGet(cacheKeyAll);
+  const listaFichas = document.getElementById('lista-fichas');
+  if (cached && Array.isArray(cached)) {
+    renderListaFichasMaster(cached);
+    // refresh in background
+    db.collection('fichas').get().then(snapshot => {
+      const arr = [];
+      snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+      cacheSet(cacheKeyAll, arr, 5);
+      renderListaFichasMaster(arr);
+    }).catch(err => console.warn('refresh fichas master failed', err));
+    return;
+  }
+  try {
+    const snapshot = await db.collection('fichas').get();
+    const arr = [];
+    snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+    cacheSet(cacheKeyAll, arr, 5);
+    renderListaFichasMaster(arr);
+  } catch(err) {
+    console.error('Erro ao carregar fichas para mestre:', err);
+    if (listaFichas) listaFichas.innerHTML = '<p>Erro ao carregar fichas</p>';
+  }
+}
+
+function renderListaFichasMaster(arr) {
+  const listaFichas = document.getElementById('lista-fichas');
+  if (!listaFichas) return;
+  listaFichas.innerHTML = '';
+  if (!arr.length) {
+    listaFichas.innerHTML = '<p>Nenhuma ficha encontrada</p>';
+    return;
+  }
+  arr.forEach(ficha => {
+    const fichaEl = document.createElement('div');
+    fichaEl.className = 'ficha-item';
+    fichaEl.setAttribute('data-id', ficha.id);
+    fichaEl.innerHTML = `
+      <div class="ficha-avatar">${ficha.avatar ? `<img src="${ficha.avatar}" alt="${escapeHtml(ficha.nome)}">` : '<i class="fas fa-user fa-2x"></i>'}</div>
+      <div class="ficha-info">
+        <h3>${escapeHtml(ficha.nome||'Sem nome')}</h3>
+        <p><strong>Jogador:</strong> ${escapeHtml(ficha.nickname||'Sem apelido')}</p>
+        <p><strong>Time:</strong> ${escapeHtml(mapaTimes[ficha.time]||'-')} | <strong>Posição:</strong> ${escapeHtml(mapaPosicoes[ficha.posicao]||'-')}</p>
+        <p><i class="fas fa-futbol"></i> ${ficha.gols||0} Gols | <i class="fas fa-shoe-prints"></i> ${ficha.assistencias||0} Assistências</p>
+      </div>
+      <button class="btn" onclick="abrirEdicaoNoMestre('${ficha.id}')"><i class="fas fa-edit"></i> Editar</button>
+      <button class="btn btn-delete" onclick="excluirFichaAdmin('${ficha.id}')" style="margin-left: 10px;"><i class="fas fa-trash"></i></button>
+    `;
+    listaFichas.appendChild(fichaEl);
+  });
+}
+
+// ===== Ranking system (admin-controlled publish + cronômetro) =====
+// Firestore doc: collection 'rankings', doc 'weekly'
+async function carregarRanking() {
+  const rankContainer = document.getElementById('secao-ranking');
+  if (!rankContainer) return;
+  const rankingDoc = await db.collection('rankings').doc('weekly').get().catch(()=>null);
+  let ranking = rankingDoc && rankingDoc.exists ? rankingDoc.data() : null;
+  renderRanking(ranking);
+}
+
+function renderRanking(ranking) {
+  const container = document.getElementById('secao-ranking');
+  if (!container) return;
+  const inner = container.querySelector('.ficha-container') || container;
+  // if not admin or no ranking -> show EM BREVE for players
+  if (!isAdmin) {
+    if (!ranking || !ranking.published) {
+      inner.innerHTML = `<div class="em-breve"><h1>RANKING</h1><p>EM BREVE</p></div>`;
+      // but show countdown if publishAt exists
+      if (ranking && ranking.publishAt) {
+        startCountdown(new Date(ranking.publishAt.seconds * 1000));
+        // show small message under em-breve
+        const msg = document.createElement('p');
+        msg.style.marginTop='12px';
+        msg.style.color='var(--verde-neon)';
+        msg.textContent = 'Ranking será publicado em breve.';
+        inner.appendChild(msg);
+      }
+      return;
+    }
+  }
+  // Build admin interface if admin
+  if (isAdmin) {
+    // Build controls for publishing and cronômetro
+    const positions = (ranking && ranking.positions) ? ranking.positions : [];
+    let htmlParts = `<div style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <label><strong>Cronômetro (publicar em):</strong></label>
+      <input type="datetime-local" id="ranking-publishAt" value="${ranking && ranking.publishAt ? new Date(ranking.publishAt.seconds*1000).toISOString().slice(0,16) : ''}" />
+      <button class="btn" onclick="salvarPublishAt()">Salvar Cronômetro</button>
+      <button class="btn" onclick="publicarRanking()">${ranking && ranking.published ? 'Despublicar' : 'Publicar Ranking'}</button>
+    </div>`;
+    htmlParts += '<div id="admin-ranking-list" style="display:flex; flex-direction:column; gap:8px;">';
+    // allow top 1..10 assignment
+    for (let i=1;i<=10;i++) {
+      const existing = positions.find(p=>p.pos===i) ? positions.find(p=>p.pos===i).fichaId : '';
+      htmlParts += `<div style="display:flex; gap:8px; align-items:center;">
+        <span style="width:36px; font-weight:bold;">#${i}</span>
+        <select id="rank-select-${i}" style="flex:1;"></select>
+        <button class="btn" onclick="assignRankingPosition(${i})">Atribuir</button>
+      </div>`;
+    }
+    htmlParts += '</div>';
+    // area to preview published ranking
+    htmlParts += '<div id="preview-ranking" style="margin-top:18px;"></div>';
+    inner.innerHTML = `<div class="ficha-container">${htmlParts}</div>`;
+    // populate select options with fichas list
+    db.collection('fichas').get().then(snapshot=>{
+      const fichas = [];
+      snapshot.forEach(doc=> fichas.push({ id: doc.id, ...doc.data() }));
+      for (let i=1;i<=10;i++) {
+        const sel = document.getElementById('rank-select-'+i);
+        sel.innerHTML = '<option value="">-- Selecionar ficha --</option>';
+        fichas.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.id;
+          opt.textContent = `${f.nickname||f.nome||'Sem nome'} (${f.gols||0} gols)`;
+          sel.appendChild(opt);
+        });
+        // set existing value
+        const existing = positions.find(p=>p.pos===i) ? positions.find(p=>p.pos===i).fichaId : '';
+        if (existing) sel.value = existing;
+      }
+      renderRankingPreview(ranking);
+    });
+    return;
+  }
+
+  // If published and not admin -> show published ranking
+  if (ranking && ranking.published) {
+    const positions = ranking.positions || [];
+    let html = `<h1>Ranking Semanal</h1><div style="display:flex; flex-direction:column; gap:8px;">`;
+    positions.forEach(p => {
+      // fetch ficha info synchronously isn't possible here; we'll render placeholders and then fill via DB
+      html += `<div class="ficha-item" data-id="${p.fichaId}">
+        <div class="ficha-avatar" id="rank-avatar-${p.pos}"><i class="fas fa-user fa-2x"></i></div>
+        <div class="ficha-info">
+          <h3 id="rank-nome-${p.pos}">Carregando...</h3>
+          <p id="rank-dados-${p.pos}"></p>
+        </div>
+      </div>`;
+    });
+    html += `</div><div style="margin-top:12px; color:var(--verde-neon); font-weight:bold;">Parabéns aos colocados! 🎉</div>`;
+    inner.innerHTML = `<div class="ficha-container">${html}</div>`;
+    // fill fichas data
+    positions.forEach(async p => {
+      try {
+        const doc = await db.collection('fichas').doc(p.fichaId).get();
+        if (!doc.exists) return;
+        const f = doc.data();
+        const pos = p.pos;
+        const nomeEl = document.getElementById('rank-nome-'+pos);
+        if (nomeEl) nomeEl.textContent = `${f.nome || ''} (${f.nickname || ''})`;
+        const dadosEl = document.getElementById('rank-dados-'+pos);
+        if (dadosEl) {
+          let dados = `${f.gols||0} Gols • ${f.assistencias||0} Assistências • Classe: ${f.classe||'-'}`;
+          if (['zagueiro','lateral_direito','lateral_esquerdo','volante'].includes(f.posicao)) {
+            dados += ` • SG: ${f.sg||0}`;
+          }
+          dadosEl.textContent = dados;
+        }
+        const avatarEl = document.getElementById('rank-avatar-'+pos);
+        if (avatarEl) avatarEl.innerHTML = f.avatar ? `<img src="${f.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : '<i class="fas fa-user fa-2x"></i>';
+        // add emoji for top3
+        const fichaItem = avatarEl ? avatarEl.parentElement : null;
+        if (fichaItem && pos===1) fichaItem.querySelector('h3').textContent = '🏆 ' + fichaItem.querySelector('h3').textContent;
+        if (fichaItem && pos===2) fichaItem.querySelector('h3').textContent = '🥈 ' + fichaItem.querySelector('h3').textContent;
+        if (fichaItem && pos===3) fichaItem.querySelector('h3').textContent = '🥉 ' + fichaItem.querySelector('h3').textContent;
+      } catch(e){ console.warn('rank fill failed', e); }
+    });
+    return;
+  }
+
+  // default fallback
+  inner.innerHTML = `<div class="em-breve"><h1>RANKING</h1><p>EM BREVE</p></div>`;
+}
+
+// helper to render preview in admin mode
+function renderRankingPreview(ranking) {
+  const preview = document.getElementById('preview-ranking');
+  if (!preview) return;
+  const positions = (ranking && ranking.positions) ? ranking.positions : [];
+  let html = '<h2>Preview (como ficará publicado)</h2><div style="display:flex; flex-direction:column; gap:8px;">';
+  for (let i=1;i<=10;i++) {
+    const sel = document.getElementById('rank-select-'+i);
+    const fid = sel ? sel.value : '';
+    const label = sel && sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : '--';
+    html += `<div style="display:flex; gap:12px; align-items:center;"><strong>#${i}</strong> ${label}</div>`;
+  }
+  html += '</div>';
+  preview.innerHTML = html;
+}
+
+// assign a position (admin)
+async function assignRankingPosition(pos) {
+  const sel = document.getElementById('rank-select-'+pos);
+  if (!sel) return;
+  const fichaIdSel = sel.value;
+  mostrarLoader('Atribuindo posição...');
+  try {
+    const docRef = db.collection('rankings').doc('weekly');
+    const doc = await docRef.get();
+    let ranking = doc.exists ? doc.data() : { positions: [], published: false };
+    ranking.positions = ranking.positions || [];
+    // remove any existing pos for this ficha
+    ranking.positions = ranking.positions.filter(p => p.pos !== pos);
+    ranking.positions.push({ pos: pos, fichaId: fichaIdSel });
+    await docRef.set(ranking);
+    alert('Posição atribuída!');
+    carregarRanking();
+  } catch(e){ console.error(e); alert('Erro ao atribuir: '+e.message); }
+  esconderLoader();
+}
+
+// save publishAt
+async function salvarPublishAt() {
+  const input = document.getElementById('ranking-publishAt');
+  if (!input) return alert('Escolha uma data/hora');
+  const val = input.value;
+  const date = new Date(val);
+  if (isNaN(date.getTime())) return alert('Data inválida');
+  mostrarLoader('Salvando cronômetro...');
+  try {
+    await db.collection('rankings').doc('weekly').set({ publishAt: firebase.firestore.Timestamp.fromDate(date) }, { merge: true });
+    alert('Cronômetro salvo');
+    carregarRanking();
+  } catch(e){ alert('Erro: '+e.message); }
+  esconderLoader();
+}
+
+// publish/unpublish ranking
+async function publicarRanking() {
+  mostrarLoader('Atualizando status...');
+  try {
+    const docRef = db.collection('rankings').doc('weekly');
+    const doc = await docRef.get();
+    let ranking = doc.exists ? doc.data() : { positions: [], published: false };
+    ranking.published = !ranking.published;
+    await docRef.set(ranking);
+    alert(ranking.published ? 'Ranking publicado!' : 'Ranking despublicado');
+    carregarRanking();
+  } catch(e){ alert('Erro: '+e.message); }
+  esconderLoader();
+}
+
+// Countdown display
+let countdownInterval = null;
+function startCountdown(targetDate) {
+  if (!targetDate) return;
+  if (countdownInterval) clearInterval(countdownInterval);
+  function tick() {
+    const now = new Date();
+    const diff = targetDate - now;
+    const container = document.querySelector('#secao-ranking .ficha-container');
+    if (!container) return;
+    let el = container.querySelector('.ranking-countdown');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'ranking-countdown';
+      el.style.marginTop = '12px';
+      el.style.color = 'var(--verde-neon)';
+      container.appendChild(el);
+    }
+    if (diff <= 0) {
+      el.textContent = 'Ranking disponível agora.';
+      clearInterval(countdownInterval);
+      carregarRanking();
+      return;
+    }
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((diff % (1000*60)) / 1000);
+    el.textContent = `Publicação em: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+  tick();
+  countdownInterval = setInterval(tick, 1000);
+}
+
+// small UI binding: when selects change update preview
+document.addEventListener('change', function(e){
+  if (e.target && e.target.id && e.target.id.startsWith('rank-select-')) {
+    renderRankingPreview(null);
+  }
+});
+
+// ===== end injected helpers =====
+
     function abrirLogin() {
       document.getElementById('modal-login').style.display = 'flex';
     }
