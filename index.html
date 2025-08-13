@@ -422,12 +422,28 @@
     }
 
     /* Atributos e Perícias */
-    .grid-atributos {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
-    }
+    /* Grid de atributos: layout balanceado (3 em cima / 2 embaixo para 5 itens) */
+   .grid-atributos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* tenta 3 colunas em telas maiores */
+    gap: 25px;
+    margin-top: 30px;
+   }
+
+   /* Em telas médias, usar 2 colunas para manter legibilidade */
+   @media (max-width: 992px) {
+   .grid-atributos {
+   grid-template-columns: repeat(2, 1fr);
+   }
+ }
+
+   /* Em telas pequenas, 1 coluna */
+   @media (max-width: 480px) {
+   .grid-atributos {
+   grid-template-columns: 1fr;
+  }
+}
+
 
     .card-atributo {
       background: rgba(20, 30, 60, 0.6);
