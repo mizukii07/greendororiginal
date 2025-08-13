@@ -1279,12 +1279,6 @@
     <div id="secao-mestre" style="display: none;">
       <div class="ficha-container">
         <h1><i class="fas fa-crown"></i> PAINEL DO MESTRE</h1>
-    <!-- botão para o mestre criar nova ficha -->
-    <div style="display:flex; gap:12px; align-items:center; margin-top:10px;">
-     <button class="btn" onclick="criarNovaFicha()" title="Criar nova ficha">
-      <i class="fas fa-plus"></i> Nova Ficha
-       </button>
-         </div>
         <div id="admin-message" style="color: #ff6b6b; margin-bottom: 20px; display: none;">
           <i class="fas fa-exclamation-circle"></i> Acesso restrito a administradores
         </div>
@@ -2186,58 +2180,14 @@ async function abrirEdicaoNoMestre(id) {
   }
 }
 
-function preencherModalEdicao(ficha, id) {
-  const container = document.getElementById('modal-ficha-conteudo');
-  // Build a compact form inside modal for editing a few key fields (nome, nickname, gols, assistencias, classe)
-  container.innerHTML = `
-    <div style="display:flex; gap:12px; flex-direction:column;">
-      <label>Nome</label><input id="modal_nome" value="${escapeHtml(ficha.nome||'')}" />
-      <label>Apelido</label><input id="modal_nickname" value="${escapeHtml(ficha.nickname||'')}" />
-      <label>Classe</label><input id="modal_classe" value="${escapeHtml(ficha.classe||'')}" />
-      <label>Gols</label><input id="modal_gols" type="number" value="${ficha.gols||0}" />
-      <label>Assistências</label><input id="modal_assist" type="number" value="${ficha.assistencias||0}" />
-      <div style="display:flex; gap:10px; margin-top:12px;">
-        <button class="btn" onclick="salvarEdicaoMestre('${id}')"><i class="fas fa-save"></i> Salvar</button>
-        <button class="btn" onclick="fecharModalFicha()"><i class="fas fa-times"></i> Fechar</button>
-      </div>
-    </div>
-  `;
-}
 
-// Escape helper to avoid breaking HTML when injecting strings
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/[&<>"']/g, function(m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+  return String(str).replace(/[&<>"']/g, function(m) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
+  });
 }
 
-async function salvarEdicaoMestre(id) {
-  mostrarLoader('Salvando edição...');
-  try {
-    const nome = document.getElementById('modal_nome').value;
-    const nickname = document.getElementById('modal_nickname').value;
-    const classe = document.getElementById('modal_classe').value;
-    const gols = parseInt(document.getElementById('modal_gols').value) || 0;
-    const assist = parseInt(document.getElementById('modal_assist').value) || 0;
-    await db.collection('fichas').doc(id).set({
-      nome: nome,
-      nickname: nickname,
-      classe: classe,
-      gols: gols,
-      assistencias: assist
-    }, { merge: true });
-    // refresh master list and ranking cache
-    cacheSet('fichas_cache_all', null, 0); // invalidate
-    carregarFichasParaMestre();
-    carregarRanking(); // in case ranking uses updated info
-    alert('Edição salva com sucesso!');
-    fecharModalFicha();
-  } catch (err) {
-    console.error(err);
-    alert('Erro ao salvar: ' + err.message);
-  } finally {
-    esconderLoader();
-  }
-}
 
 // ===== Faster load: caching fichas per user and for master list =====
 async function carregarFichasDoUsuario() {
@@ -2717,6 +2667,188 @@ document.addEventListener('change', function(e){
         }
       });
     });
-  </script>
+  
+// ---- ADMIN: full ficha edit modal (does not change user's loaded fichaId) ----
+async function abrirEdicaoNoMestre(id) {
+  mostrarLoader('Abrindo ficha para edição...');
+  try {
+    const doc = await db.collection('fichas').doc(id).get();
+    if (!doc.exists) { alert('Ficha não encontrada'); esconderLoader(); return; }
+    const ficha = doc.data();
+    const c = document.getElementById('modal-ficha-conteudo');
+    if (!c) return;
+    // build modal fields mirroring main form but prefix with modal_
+    let html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+    function addField(label, id, value, type='text') {
+      if (value===undefined || value===null) value='';
+      if (type==='textarea') html += '<label>'+label+'</label><textarea id="'+id+'">'+String(value).replace(/</g,'&lt;')+'</textarea>';
+      else html += '<label>'+label+'</label><input id="'+id+'" type="'+type+'" value="'+String(value).replace(/"/g,'&quot;')+'"/>';
+    }
+    addField('Apelido','modal_nickname',ficha.nickname||'');
+    addField('Nome','modal_nome',ficha.nome||'');
+    addField('Idade','modal_idade',ficha.idade||18,'number');
+    addField('Classe','modal_classe',ficha.classe||'');
+    addField('Time','modal_time',ficha.time||'');
+    addField('Posição','modal_posicao',ficha.posicao||'');
+    addField('Posição Secundária','modal_posicao_secundaria',ficha.posicao_secundaria||'');
+    addField('Altura','modal_altura',ficha.altura||1.75,'number');
+    addField('Peso','modal_peso',ficha.peso||70,'number');
+    addField('Perna','modal_perna',ficha.perna||'');
+    addField('Dom','modal_dom',ficha.dom||'');
+    addField('Fôlego Atual','modal_folego_atual',ficha['folego-atual']||ficha.folego_atual||10,'number');
+    addField('Fôlego Total','modal_folego_total',ficha['folego-total']||ficha.folego_total||10,'number');
+    addField('Gols','modal_gols',ficha.gols||0,'number');
+    addField('Assistências','modal_assistencias',ficha.assistencias||0,'number');
+    addField('SG','modal_sg',ficha.sg||0,'number');
+    addField('Habilidades','modal_habilidades',ficha.habilidades||'','textarea');
+    addField('Avatar (URL)','modal_avatar',ficha.avatar||'');
+    // attributes
+    const attrs = ['potencia','tecnica','velocidade','agilidade','ego'];
+    html += '<h4>Atributos</h4>';
+    attrs.forEach(k=>{ addField(k.toUpperCase(),'modal_'+k,(ficha[k]!==undefined?ficha[k]:0),'number'); });
+    // pericias dynamic
+    if (ficha.pericias && typeof ficha.pericias === 'object') {
+      html += '<h4>Perícias</h4>';
+      for (const pk in ficha.pericias) {
+        addField(pk,'modal_pericia_'+pk,ficha.pericias[pk],'number');
+      }
+    }
+    html += "<div style=\'display:flex;gap:10px;margin-top:12px;\' >";
+    html += "<button class=\'btn\' onclick=\'salvarEdicaoMestreFull(\\""+id+"\\")\'><i class=\'fas fa-save\'></i> Salvar</button>";
+    html += "<button class=\'btn\' onclick=\'fecharModalFicha()\'><i class=\'fas fa-times\'></i> Fechar</button>";
+    html += "</div>";
+    html += '</div>';
+    c.innerHTML = html;
+    document.getElementById('modal-ficha-titulo').textContent = 'EDITAR FICHA (MESTRE)';
+    document.getElementById('modal-ficha').style.display = 'flex';
+  } catch(e){ console.error(e); alert('Erro ao abrir ficha: '+(e.message||e)); } finally { esconderLoader(); }
+}
+
+async function salvarEdicaoMestreFull(id) {
+  mostrarLoader('Salvando ficha...');
+  try {
+    const payload = {};
+    const keys = ['nickname','nome','idade','classe','time','posicao','posicao_secundaria','altura','peso','perna','dom','folego_atual','folego_total','gols','assistencias','sg','habilidades','avatar','potencia','tecnica','velocidade','agilidade','ego'];
+    keys.forEach(k=>{
+      const el = document.getElementById('modal_'+k) || document.getElementById('modal_'+k.replace('_','-'));
+      if (el) {
+        if (el.type === 'number') payload[k.replace('_','-')] = Number(el.value)||0;
+        else payload[k.replace('_','-')] = el.value;
+      }
+    });
+    // pericias
+    const pericias = {};
+    Array.from(document.querySelectorAll('[id^=\"modal_pericia_\"]')).forEach(ip=>{
+      const pk = ip.id.replace('modal_pericia_','');
+      pericias[pk] = Number(ip.value)||0;
+    });
+    if (Object.keys(pericias).length) payload.pericias = pericias;
+    await db.collection('fichas').doc(id).set(payload, { merge: true });
+    // refresh master list and ranking but DO NOT alter global fichaId -> so user's loaded ficha remains
+    cacheSet('fichas_cache_all', null, 0);
+    carregarFichasParaMestre();
+    carregarRanking();
+    alert('Ficha salva com sucesso.');
+    fecharModalFicha();
+  } catch(e){ console.error(e); alert('Erro ao salvar: '+(e.message||e)); } finally { esconderLoader(); }
+}
+
+// ---- Ranking visuals enhancements (congrats + encouragement + countdown visible even when unpublished) ----
+function renderRankingEnhanced(ranking) {
+  // prefer existing carregarRanking/renderRanking if present, else use this function when showing ranking
+  const container = document.getElementById('secao-ranking');
+  if (!container) return;
+  const inner = container.querySelector('.ficha-container') || container;
+  const publishAt = ranking && ranking.publishAt ? new Date(ranking.publishAt.seconds*1000) : null;
+  // not published for players: show EM BREVE but show countdown if publishAt set
+  if (!isAdmin && (!ranking || !ranking.published)) {
+    inner.innerHTML = `<div class="em-breve"><h1>RANKING</h1><p>EM BREVE</p></div>`;
+    if (publishAt) {
+      const el = document.createElement('div');
+      el.className = 'ranking-countdown';
+      el.style.marginTop='12px'; el.style.color='var(--verde-neon)';
+      inner.appendChild(el);
+      startCountdown(publishAt);
+    }
+    return;
+  }
+  // if published show polished list
+  if (ranking && ranking.published) {
+    const positions = ranking.positions || [];
+    let html = `<h1>Ranking Semanal</h1><div style="display:flex;flex-direction:column;gap:8px;">`;
+    positions.forEach(p=>{
+      html += `<div class="ficha-item" id="rank-item-${p.pos}" data-id="${p.fichaId}" style="align-items:center;">
+        <div class="ficha-avatar" id="rank-avatar-${p.pos}" style="width:64px;height:64px;border-radius:8px;overflow:hidden;border:2px solid var(--verde-neon);"></div>
+        <div class="ficha-info" style="flex:1;">
+          <h3 id="rank-nome-${p.pos}">Carregando...</h3>
+          <p id="rank-dados-${p.pos}"></p>
+        </div>
+        <div id="rank-emoji-${p.pos}" style="width:80px;text-align:center;"></div>
+      </div>`;
+    });
+    html += `</div><div id="rank-messages" style="margin-top:12px;padding:12px;border-radius:8px;background:rgba(0,0,0,0.25);"><div id="rank-congrats" style="font-weight:bold;color:var(--destaque)"></div><div id="rank-encourage" style="margin-top:8px;color:#cfeee0"></div></div>`;
+    inner.innerHTML = `<div class="ficha-container">${html}</div>`;
+    positions.forEach(async p=>{
+      try {
+        const doc = await db.collection('fichas').doc(p.fichaId).get();
+        if (!doc.exists) return;
+        const f = doc.data();
+        const pos = p.pos;
+        const nomeEl = document.getElementById('rank-nome-'+pos);
+        if (nomeEl) nomeEl.textContent = `${f.nome||''} (${f.nickname||''})`;
+        const dadosEl = document.getElementById('rank-dados-'+pos);
+        if (dadosEl) {
+          let dados = `${f.gols||0} Gols • ${f.assistencias||0} Assistências • Classe: ${f.classe||'-'}`;
+          if (['zagueiro','lateral_direito','lateral_esquerdo','volante'].includes(f.posicao)) dados += ` • SG: ${f.sg||0}`;
+          dadosEl.textContent = dados;
+        }
+        const avatarEl = document.getElementById('rank-avatar-'+pos);
+        if (avatarEl) avatarEl.innerHTML = f.avatar ? `<img src="${f.avatar}" style="width:100%;height:100%;object-fit:cover;">` : '<i class="fas fa-user fa-2x"></i>';
+        const emojiEl = document.getElementById('rank-emoji-'+pos);
+        if (emojiEl) {
+          if (pos===1) emojiEl.innerHTML = '<span style="font-size:1.6rem">🏆</span>';
+          else if (pos===2) emojiEl.innerHTML = '<span style="font-size:1.4rem">🥈</span>';
+          else if (pos===3) emojiEl.innerHTML = '<span style="font-size:1.2rem">🥉</span>';
+          else emojiEl.innerHTML = `<span style="color:#cfeee0">#${pos}</span>`;
+        }
+      } catch(e){ console.warn(e); }
+    });
+    // messages (after a short delay to allow loading)
+    setTimeout(()=>{
+      const top1 = document.getElementById('rank-nome-1') ? document.getElementById('rank-nome-1').textContent : '';
+      const congrats = document.getElementById('rank-congrats');
+      const encourage = document.getElementById('rank-encourage');
+      if (congrats) congrats.textContent = top1 ? `Parabéns ao líder: ${top1} — continue brilhando! 🎉` : 'Parabéns aos colocados! 🎉';
+      if (encourage) encourage.textContent = 'Não ficou entre os primeiros? Não desanime — treine e suba na próxima semana! 💪';
+    },700);
+    if (publishAt) startCountdown(publishAt);
+    return;
+  }
+  // fallback
+  inner.innerHTML = `<div class="em-breve"><h1>RANKING</h1><p>EM BREVE</p></div>`;
+  if (publishAt) {
+    const el = document.createElement('div');
+    el.className='ranking-countdown'; el.style.marginTop='12px'; el.style.color='var(--verde-neon)'; inner.appendChild(el);
+    startCountdown(publishAt);
+  }
+}
+
+// Ensure carregarRanking uses renderRankingEnhanced if appropriate
+if (typeof carregarRanking === 'function') {
+  const originalCarregar = carregarRanking;
+  carregarRanking = async function() {
+    try {
+      const rankDoc = await db.collection('rankings').doc('weekly').get().catch(()=>null);
+      const ranking = rankDoc && rankDoc.exists ? rankDoc.data() : null;
+      // prefer to call existing renderRanking if present, else use enhanced
+      if (typeof renderRanking === 'function') {
+        renderRanking(ranking);
+      } else {
+        renderRankingEnhanced(ranking);
+      }
+    } catch(e){ console.warn('carregarRanking failed', e); }
+  };
+}
+</script>
 </body>
 </html>
