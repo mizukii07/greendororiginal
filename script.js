@@ -173,7 +173,7 @@ function calcularPericias() {
   const peso = parseInt(document.getElementById('peso').value) || 70;
   const perna = document.getElementById('perna').value;
   const posicao = document.getElementById('posicao').value;
-  const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 10;
+  const folegoAtual = parseInt(document.getElementById('folego-atual').value) || 0;
   const folegoTotal = parseInt(document.getElementById('folego-total').value) || 10;
 
   const bonusA = getBonus(altura, bonusAltura);
@@ -191,8 +191,7 @@ function calcularPericias() {
   const bonusAjustadoA = ajustarDefesa({...bonusA});
   const bonusAjustadoP = ajustarDefesa({...bonusP});
 
-  const porcentagemFolego = folegoTotal > 0 ? Math.min(100, (folegoAtual / folegoTotal) * 100) : 0;
-  document.getElementById('barra-folego').style.width = `${porcentagemFolego}%`;
+  atualizarBarraFolego();
   
   let staminaPenalty = 1;
   let staminaClass = '';
@@ -200,7 +199,7 @@ function calcularPericias() {
   if (folegoAtual <= 0) {
     staminaPenalty = 0;
     staminaClass = 'no-stamina';
-  } else if (folegoAtual <= Math.floor(folegoTotal / 2)) {
+  } else if (folegoAtual <= 10) {
     staminaPenalty = 0.5;
     staminaClass = 'low-stamina';
   }
@@ -236,7 +235,7 @@ function calcularPericias() {
 
     if (folegoAtual <= 0) {
       valorTotal = 0;
-    } else if (staminaPenalty !== 1) {
+    } else if (staminaPenalty === 0.5) {
       valorTotal = Math.floor(valorTotal * staminaPenalty);
     }
 
@@ -811,12 +810,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   const campos = ['altura', 'peso', 'perna', 'folego-atual', 'folego-total', 'posicao', 'posicao_secundaria'];
   campos.forEach(id => {
-    document.getElementById(id).addEventListener('change', calcularPericias);
+    const element = document.getElementById(id);
+    if (element) {
+      element.addEventListener('change', calcularPericias);
+    }
   });
   
   const atributos = ['potencia', 'tecnica', 'velocidade', 'agilidade', 'ego'];
   atributos.forEach(attr => {
-    document.getElementById(attr).addEventListener('input', calcularPericias);
+    const element = document.getElementById(attr);
+    if (element) {
+      element.addEventListener('input', calcularPericias);
+    }
   });
   
   document.querySelectorAll('.pericia-manual').forEach(input => {
@@ -835,5 +840,15 @@ document.addEventListener('DOMContentLoaded', function() {
       };
       reader.readAsDataURL(file);
     }
+  });
+
+  document.getElementById('folego-atual').addEventListener('input', function() {
+    atualizarBarraFolego();
+    calcularPericias();
+  });
+
+  document.getElementById('folego-total').addEventListener('input', function() {
+    atualizarBarraFolego();
+    calcularPericias();
   });
 });
