@@ -94,6 +94,8 @@ let fichaId = '';
 let isAdmin = false;
 let fichasUsuario = [];
 let fichaParaExcluir = null;
+let habilidades = [];
+let editandoHabilidadeIndex = -1;
 
 function verificarImagens() {
   const loader = document.getElementById('loader');
@@ -396,7 +398,7 @@ async function salvarFicha() {
     deslocamento: document.getElementById('deslocamento').value,
     time: document.getElementById('time').value,
     avatar: document.getElementById('avatar-img').src || '',
-    habilidades: document.getElementById('habilidades').value,
+    habilidades: habilidades,
     pericias: {}
   };
 
@@ -478,6 +480,11 @@ function criarNovaFicha() {
   fichaId = '';
   document.getElementById('btn-excluir').style.display = 'none';
   
+  // Limpar habilidades
+  habilidades = [];
+  atualizarListaHabilidades();
+  atualizarContadorHabilidades();
+  
   atualizarBarraFolego();
   atualizarCamposPosicao();
   calcularPericias();
@@ -521,7 +528,11 @@ function preencherFormulario(ficha) {
   document.getElementById('sg').value = ficha.sg || 0;
   document.getElementById('deslocamento').value = ficha.deslocamento || 10;
   document.getElementById('time').value = ficha.time || '';
-  document.getElementById('habilidades').value = ficha.habilidades || '';
+  
+  // Carregar habilidades
+  habilidades = ficha.habilidades || [];
+  atualizarListaHabilidades();
+  atualizarContadorHabilidades();
   
   if (ficha.avatar) {
     const img = document.getElementById('avatar-img');
@@ -757,6 +768,152 @@ function logout() {
   window.location.reload();
 }
 
+// Funções para o sistema de habilidades
+function adicionarNovaHabilidade() {
+  if (habilidades.length >= 15) {
+    alert('Limite máximo de 15 habilidades atingido!');
+    return;
+  }
+  
+  document.getElementById('form-nova-habilidade').style.display = 'block';
+  document.getElementById('btn-add-habilidade').style.display = 'none';
+  limparFormularioHabilidade();
+  editandoHabilidadeIndex = -1;
+}
+
+function cancelarHabilidade() {
+  document.getElementById('form-nova-habilidade').style.display = 'none';
+  document.getElementById('btn-add-habilidade').style.display = 'block';
+  limparFormularioHabilidade();
+  editandoHabilidadeIndex = -1;
+}
+
+function limparFormularioHabilidade() {
+  document.getElementById('nome-habilidade-input').value = '';
+  document.querySelector('input[name="tipo-habilidade"][value="passiva"]').checked = true;
+  document.getElementById('custo-habilidade-input').value = '1';
+  document.getElementById('custo-container').style.display = 'none';
+  document.getElementById('descricao-habilidade-input').value = '';
+}
+
+function toggleCustoHabilidade() {
+  const tipoAtiva = document.querySelector('input[name="tipo-habilidade"][value="ativa"]').checked;
+  document.getElementById('custo-container').style.display = tipoAtiva ? 'block' : 'none';
+}
+
+function salvarHabilidade() {
+  const nome = document.getElementById('nome-habilidade-input').value.trim();
+  const tipo = document.querySelector('input[name="tipo-habilidade"]:checked').value;
+  const custo = tipo === 'ativa' ? parseInt(document.getElementById('custo-habilidade-input').value) || 1 : 0;
+  const descricao = document.getElementById('descricao-habilidade-input').value.trim();
+  
+  if (!nome) {
+    alert('Por favor, informe o nome da habilidade!');
+    return;
+  }
+  
+  if (!descricao) {
+    alert('Por favor, informe a descrição da habilidade!');
+    return;
+  }
+  
+  const novaHabilidade = {
+    nome,
+    tipo,
+    custo,
+    descricao,
+    expandida: false
+  };
+  
+  if (editandoHabilidadeIndex >= 0) {
+    // Editando habilidade existente
+    habilidades[editandoHabilidadeIndex] = novaHabilidade;
+  } else {
+    // Adicionando nova habilidade
+    habilidades.push(novaHabilidade);
+  }
+  
+  atualizarListaHabilidades();
+  atualizarContadorHabilidades();
+  cancelarHabilidade();
+}
+
+function editarHabilidade(index) {
+  const habilidade = habilidades[index];
+  
+  document.getElementById('nome-habilidade-input').value = habilidade.nome;
+  document.querySelector(`input[name="tipo-habilidade"][value="${habilidade.tipo}"]`).checked = true;
+  document.getElementById('custo-habilidade-input').value = habilidade.custo;
+  document.getElementById('custo-container').style.display = habilidade.tipo === 'ativa' ? 'block' : 'none';
+  document.getElementById('descricao-habilidade-input').value = habilidade.descricao;
+  
+  document.getElementById('form-nova-habilidade').style.display = 'block';
+  document.getElementById('btn-add-habilidade').style.display = 'none';
+  editandoHabilidadeIndex = index;
+}
+
+function excluirHabilidade(index) {
+  if (confirm('Tem certeza que deseja excluir esta habilidade?')) {
+    habilidades.splice(index, 1);
+    atualizarListaHabilidades();
+    atualizarContadorHabilidades();
+  }
+}
+
+function toggleExpandirHabilidade(index) {
+  habilidades[index].expandida = !habilidades[index].expandida;
+  atualizarListaHabilidades();
+}
+
+function atualizarListaHabilidades() {
+  const listaHabilidades = document.getElementById('lista-habilidades');
+  listaHabilidades.innerHTML = '';
+  
+  if (habilidades.length === 0) {
+    listaHabilidades.innerHTML = '<p class="sem-habilidades">Nenhuma habilidade adicionada ainda.</p>';
+    return;
+  }
+  
+  habilidades.forEach((habilidade, index) => {
+    const habilidadeEl = document.createElement('div');
+    habilidadeEl.className = `habilidade-item ${habilidade.tipo}`;
+    
+    const tipoTexto = habilidade.tipo === 'ativa' ? `(ATIVA - ${habilidade.custo} Fôlego)` : '(PASSIVA)';
+    
+    habilidadeEl.innerHTML = `
+      <div class="habilidade-cabecalho" onclick="toggleExpandirHabilidade(${index})">
+        <div class="habilidade-titulo">
+          <h4>${habilidade.nome}</h4>
+          <span class="habilidade-tipo">${tipoTexto}</span>
+        </div>
+        <div class="habilidade-controles">
+          <button class="btn-icon" onclick="event.stopPropagation(); editarHabilidade(${index})">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-icon btn-delete" onclick="event.stopPropagation(); excluirHabilidade(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+          <i class="fas fa-chevron-${habilidade.expandida ? 'up' : 'down'}"></i>
+        </div>
+      </div>
+      <div class="habilidade-descricao" style="display: ${habilidade.expandida ? 'block' : 'none'}">
+        <p>${habilidade.descricao}</p>
+      </div>
+    `;
+    
+    listaHabilidades.appendChild(habilidadeEl);
+  });
+}
+
+function atualizarContadorHabilidades() {
+  const contador = document.getElementById('habilidades-contador');
+  contador.textContent = `${habilidades.length}/15 habilidades`;
+  
+  // Mostrar/esconder botão de adicionar baseado no limite
+  document.getElementById('btn-add-habilidade').style.display = 
+    habilidades.length < 15 ? 'block' : 'none';
+}
+
 auth.onAuthStateChanged(user => {
   const menuLogin = document.getElementById('menu-login');
   const userAvatar = document.getElementById('user-avatar');
@@ -850,5 +1007,10 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('folego-total').addEventListener('input', function() {
     atualizarBarraFolego();
     calcularPericias();
+  });
+  
+  // Event listeners para o sistema de habilidades
+  document.querySelectorAll('input[name="tipo-habilidade"]').forEach(radio => {
+    radio.addEventListener('change', toggleCustoHabilidade);
   });
 });
