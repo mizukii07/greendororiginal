@@ -1,3 +1,5 @@
+// Firebase config assumed já carregado antes deste script
+
 const bonusAltura = {
   '1.50-1.55': { drible: 3, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -2 },
   '1.56-1.60': { drible: 2, explosao: 2, reflexos: 2, cabeceio: -3, intimidacao: -2, defesa: -1 },
@@ -267,6 +269,7 @@ function atualizarCamposPosicao() {
   }
 }
 
+// upload de avatar
 document.getElementById('avatar-input').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -424,6 +427,8 @@ async function salvarFicha() {
   
   try {
     if (fichaId) {
+      // Atenção: este trecho mantém o comportamento atual (não sobrescreve userId caso exista no objeto ficha).
+      // Se você quiser forçar manter o userId original do documento, podemos alterar aqui (buscar doc antes de atualizar).
       const { userId, ...fichaSemUserId } = ficha;
       await db.collection('fichas').doc(fichaId).update(fichaSemUserId);
       document.getElementById('btn-excluir').style.display = 'block';
@@ -529,10 +534,18 @@ function preencherFormulario(ficha) {
   document.getElementById('deslocamento').value = ficha.deslocamento || 10;
   document.getElementById('time').value = ficha.time || '';
   
-  // Carregar habilidades
-  habilidades = ficha.habilidades || [];
+  // === CORREÇÃO IMPORTANTE: garantir que 'habilidades' seja sempre um array ===
+  if (Array.isArray(ficha.habilidades)) {
+    habilidades = ficha.habilidades;
+  } else if (ficha.habilidades && typeof ficha.habilidades === 'object') {
+    // Se foi salvo como objeto (ex: {0: {...}, 1: {...}}), converte para array
+    habilidades = Object.values(ficha.habilidades);
+  } else {
+    habilidades = [];
+  }
   atualizarListaHabilidades();
   atualizarContadorHabilidades();
+  // === fim correção ===
   
   if (ficha.avatar) {
     const img = document.getElementById('avatar-img');
@@ -907,11 +920,15 @@ function atualizarListaHabilidades() {
 
 function atualizarContadorHabilidades() {
   const contador = document.getElementById('habilidades-contador');
-  contador.textContent = `${habilidades.length}/15 habilidades`;
+  if (contador) {
+    contador.textContent = `${habilidades.length}/15 habilidades`;
+  }
   
   // Mostrar/esconder botão de adicionar baseado no limite
-  document.getElementById('btn-add-habilidade').style.display = 
-    habilidades.length < 15 ? 'block' : 'none';
+  const btnAdd = document.getElementById('btn-add-habilidade');
+  if (btnAdd) {
+    btnAdd.style.display = habilidades.length < 15 ? 'block' : 'none';
+  }
 }
 
 auth.onAuthStateChanged(user => {
@@ -919,15 +936,19 @@ auth.onAuthStateChanged(user => {
   const userAvatar = document.getElementById('user-avatar');
   
   if (user) {
-    menuLogin.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
-    menuLogin.onclick = logout;
-    
-    if (user.photoURL) {
-      userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}">`;
-    } else {
-      userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+    if (menuLogin) {
+      menuLogin.innerHTML = '<i class="fas fa-sign-out-alt"></i> Sair';
+      menuLogin.onclick = logout;
     }
-    userAvatar.style.display = 'flex';
+    
+    if (userAvatar) {
+      if (user.photoURL) {
+        userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName}">`;
+      } else {
+        userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+      }
+      userAvatar.style.display = 'flex';
+    }
     
     carregarFichasDoUsuario();
     verificarEMostrarMenuAdmin();
@@ -936,20 +957,27 @@ auth.onAuthStateChanged(user => {
       isAdmin = doc.exists;
     });
   } else {
-    menuLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
-    menuLogin.onclick = login;
-    userAvatar.style.display = 'none';
-    document.getElementById('seletor-fichas').style.display = 'none';
-    document.getElementById('btn-excluir').style.display = 'none';
+    if (menuLogin) {
+      menuLogin.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
+      menuLogin.onclick = login;
+    }
+    if (userAvatar) userAvatar.style.display = 'none';
+    const seletor = document.getElementById('seletor-fichas');
+    if (seletor) seletor.style.display = 'none';
+    const btnExcluir = document.getElementById('btn-excluir');
+    if (btnExcluir) btnExcluir.style.display = 'none';
     
-    const menuMestre = document.querySelector('nav a[onclick="mostrarSecao(\'mestre\')"]').parentElement;
-    menuMestre.style.display = 'none';
+    const menuMestre = document.querySelector('nav a[onclick="mostrarSecao(\'mestre\')"]');
+    if (menuMestre && menuMestre.parentElement) {
+      menuMestre.parentElement.style.display = 'none';
+    }
   }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => {
-    document.getElementById('loader').style.display = 'none';
+    const loader = document.getElementById('loader');
+    if (loader) loader.style.display = 'none';
   }, 3000);
   
   verificarImagens();
@@ -985,29 +1013,38 @@ document.addEventListener('DOMContentLoaded', function() {
     input.addEventListener('input', calcularPericias);
   });
 
-  document.getElementById('avatar-input').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = document.getElementById('avatar-img');
-        img.src = event.target.result;
-        img.style.display = 'block';
-        document.querySelector('.avatar span').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  const avatarInput = document.getElementById('avatar-input');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = document.getElementById('avatar-img');
+          img.src = event.target.result;
+          img.style.display = 'block';
+          const avatarSpan = document.querySelector('.avatar span');
+          if (avatarSpan) avatarSpan.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 
-  document.getElementById('folego-atual').addEventListener('input', function() {
-    atualizarBarraFolego();
-    calcularPericias();
-  });
-
-  document.getElementById('folego-total').addEventListener('input', function() {
-    atualizarBarraFolego();
-    calcularPericias();
-  });
+  const folegoAtual = document.getElementById('folego-atual');
+  if (folegoAtual) {
+    folegoAtual.addEventListener('input', function() {
+      atualizarBarraFolego();
+      calcularPericias();
+    });
+  }
+  const folegoTotal = document.getElementById('folego-total');
+  if (folegoTotal) {
+    folegoTotal.addEventListener('input', function() {
+      atualizarBarraFolego();
+      calcularPericias();
+    });
+  }
   
   // Event listeners para o sistema de habilidades
   document.querySelectorAll('input[name="tipo-habilidade"]').forEach(radio => {
