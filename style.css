@@ -991,3 +991,106 @@ input:focus, select:focus, textarea:focus {
   color: #ccc;
   line-height: 1.5;
 }
+/* =====================
+   OVERRIDE: Estilos das Habilidades (melhor contraste e vida)
+   Cole este bloco no final do style.css
+   ===================== */
+
+.habilidades-container {
+  background: linear-gradient(180deg, rgba(10,12,30,0.7), rgba(15,20,40,0.6));
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 30px;
+  border: 1px solid rgba(78,252,151,0.12);
+  box-shadow: 0 8px 30px rgba(5,10,30,0.6);
+}
+
+.habilidades-contador {
+  text-align: center;
+  color: var(--verde-neon);
+  font-weight: 700;
+  letter-spacing: .6px;
+  margin-bottom: 12px;
+}
+
+.btn-add-habilidade {
+  background: linear-gradient(135deg, rgba(78,252,151,1), rgba(30,200,120,1));
+  color: var(--verde-escuro);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(18,60,30,0.4);
+}
+.btn-add-habilidade:hover { transform: translateY(-3px); }
+
+.lista-habilidades { margin-top: 16px; }
+
+.habilidade-item {
+  background: linear-gradient(90deg, rgba(10,20,30,0.55), rgba(20,30,60,0.45));
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border-left: 5px solid rgba(78,252,151,0.12);
+  transition: transform .26s ease, box-shadow .26s ease, border-left-color .26s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  color: var(--branco);
+}
+
+.habilidade-item.ativa {
+  border-left-color: var(--destaque);
+  box-shadow: 0 10px 35px rgba(255,235,59,0.06);
+  transform: translateX(4px);
+}
+
+.habilidade-cabecalho {
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.habilidade-titulo h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  font-weight: 700;
+}
+.habilidade-titulo .habilidade-tipo {
+  display: block;
+  margin-top: 6px;
+  font-size: .85rem;
+  color: rgba(230, 255, 240, 0.85);
+}
+
+.habilidade-controles .btn-icon {
+  color: rgba(78,252,151,0.96);
+  background: transparent;
+  border-radius: 6px;
+  padding: 6px;
+}
+.habilidade-controles .btn-icon:hover { background: rgba(78,252,151,0.06); }
+
+.habilidade-descricao {
+  padding: 12px 14px 16px 14px;
+  border-top: 1px solid rgba(78,252,151,0.04);
+  background: linear-gradient(180deg, rgba(0,0,0,0.04), transparent);
+}
+.habilidade-descricao p {
+  margin: 0;
+  color: #e6f3ff;
+  line-height: 1.6;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.45);
+}
+
+.habilidade-item.ativa .habilidade-titulo h4 { color: var(--destaque); }
+.habilidade-item.passiva .habilidade-titulo h4 { color: var(--verde-neon); }
+
+.habilidade-item { opacity: 0; transform: translateY(6px); animation: habilidadeIn .36s ease forwards; }
+@keyframes habilidadeIn { to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 768px) {
+  .habilidade-cabecalho { padding: 10px; }
+  .habilidade-descricao { padding: 10px; }
+}
